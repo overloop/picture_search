@@ -1,0 +1,6 @@
+debug/
+release/
+object_script*
+Makefile*
+ui_*
+*.pro.user
