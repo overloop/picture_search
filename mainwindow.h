@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTime>
+#include <QModelIndex>
 
 #include "indexthread.h"
 #include "searchthread.h"
@@ -22,6 +24,9 @@ private:
     Ui::MainWindow *ui;
     IndexThread indexThread;
     SearchThread searchThread;
+    QTime time;
+
+    void resizeEvent(QResizeEvent *event);
 
 private slots:
     void on_addFolder_triggered();
@@ -29,6 +34,8 @@ private slots:
     void on_deviation_valueChanged(int value);
 
     void found();
+    void indexStoped();
+    void pictureClicked(QModelIndex);
 
 };
 

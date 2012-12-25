@@ -59,7 +59,7 @@ void IndexThread::addDir(const QString& d, bool subdirs)
     } else {
         waitCondition.wakeOne();
     }
-    emit indexationStarted();
+    emit indexStarted();
 }
 
 /*virtual*/
@@ -69,15 +69,15 @@ void IndexThread::run()
 
         if (m_jobs.isEmpty())
         {
-            setJobRunning(false);
+            //setJobRunning(false);
             mutex.lock();
-            emit indexationFinished();
+            emit indexStoped();
             waitCondition.wait(&mutex);
             mutex.unlock();
         }
         else
         {
-            setJobRunning(true);
+            //setJobRunning(true);
             IndexJob* job = m_jobs.takeFirst();
             while ((!job->isDone()) && (!m_abort))
             {

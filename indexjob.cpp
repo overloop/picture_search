@@ -121,9 +121,12 @@ int IndexJobAddFiles::make()
             QList<QColor> common = analyzer.analyze();
             QColor color;
 
+            //QImage preview = analyzer.scaled().scaled(QSize(150,150),Qt::KeepAspectRatio);
+
             QByteArray previewByteArray;
             QBuffer buf(&previewByteArray);
             buf.open(QIODevice::WriteOnly);
+            //preview.save(&buf,"JPEG");
             analyzer.scaled().save(&buf,"JPEG");
 
             SqlQuery q;

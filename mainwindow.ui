@@ -16,14 +16,43 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTableView" name="table">
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>200</number>
-      </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
-       <number>200</number>
-      </attribute>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QTableView" name="table">
+        <property name="maximumSize">
+         <size>
+          <width>180</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>150</number>
+        </attribute>
+        <attribute name="verticalHeaderDefaultSectionSize">
+         <number>150</number>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="PixmapLabel" name="browser">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -111,6 +140,11 @@
    <class>ColorSelectPushButton</class>
    <extends>QPushButton</extends>
    <header>colorselectpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PixmapLabel</class>
+   <extends>QLabel</extends>
+   <header>pixmaplabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

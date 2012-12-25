@@ -3,12 +3,11 @@
 
 #include <QImage>
 #include <QColor>
-#define IMAGE_SIZE_CALCULATION 200
 
 class ImageAnalyzerOptions {
 public:
     ImageAnalyzerOptions() :
-        cnt(10), h(15), s(8), l(8) {}
+        cnt(15), h(20), s(10), l(10) {}
     ImageAnalyzerOptions(int cnt,int h, int s, int l) :
         cnt(cnt),h(h),s(s),l(l) {}
     int cnt;
@@ -20,7 +19,7 @@ public:
 class ImageAnalyzer
 {
 public:
-    ImageAnalyzer(const QImage &image, QSize scaledSize = QSize(IMAGE_SIZE_CALCULATION,IMAGE_SIZE_CALCULATION));
+    ImageAnalyzer(const QImage &image, QSize scaledSize = QSize(200,200));
 
 
     QImage& scaled() {return m_scaled;}

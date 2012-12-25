@@ -13,7 +13,8 @@ SOURCES += \
     colorselectpushbutton.cpp \
     searchresultmodel.cpp \
     imageanalyzer.cpp \
-    imageanalyzertest.cpp
+    imageanalyzertest.cpp \
+    pixmaplabel.cpp
 
 HEADERS += \
     indexthread.h \
@@ -26,7 +27,8 @@ HEADERS += \
     colorselectpushbutton.h \
     searchresultmodel.h \
     imageanalyzer.h \
-    imageanalyzertest.h
+    imageanalyzertest.h \
+    pixmaplabel.h
 
 FORMS += \
     mainwindow.ui \
