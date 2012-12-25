@@ -118,7 +118,7 @@ int IndexJobAddFiles::make()
         {
             QImage image(fileName);
             ImageAnalyzer analyzer(image);
-            QList<QColor> common = analyzer.commonColors();
+            QList<QColor> common = analyzer.analyze();
             QColor color;
 
             QByteArray previewByteArray;

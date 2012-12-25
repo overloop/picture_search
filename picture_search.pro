@@ -12,7 +12,8 @@ SOURCES += \
     mainwindow.cpp \
     colorselectpushbutton.cpp \
     searchresultmodel.cpp \
-    imageanalyzer.cpp
+    imageanalyzer.cpp \
+    imageanalyzertest.cpp
 
 HEADERS += \
     indexthread.h \
@@ -24,7 +25,12 @@ HEADERS += \
     mainwindow.h \
     colorselectpushbutton.h \
     searchresultmodel.h \
-    imageanalyzer.h
+    imageanalyzer.h \
+    imageanalyzertest.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    imageanalyzertest.ui
+
+
+
