@@ -18,7 +18,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
     connect(&searchThread,SIGNAL(found()),this,SLOT(found()));
     connect(&indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
-    connect(ui->table,SIGNAL(clicked(QModelIndex)),this,SLOT(pictureClicked(QModelIndex)));
+    //connect(ui->table,SIGNAL(clicked(QModelIndex)),this,SLOT(pictureClicked(QModelIndex)));
+
+    ui->table->setSelectionBehavior(QAbstractItemView::SelectItems);
+    ui->table->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    //ui->table->setEditTriggers(QAbstractItemView::CurrentChanged);
+    //connect(ui->table,SIGNAL(pressed(QModelIndex))
 
     ui->status->setText("");
     ui->statusbar->addWidget(ui->progress,1);
@@ -71,7 +77,9 @@ void MainWindow::found()
     SearchResultModel* model = new SearchResultModel(result);
     delete ui->table->model();
     ui->table->setModel(model);
-    ui->table->setColumnHidden(1,true);
+    connect(ui->table->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
+
+    //ui->table->setColumnHidden(1,true);
 }
 
 void MainWindow::on_addFolder_triggered()
@@ -103,11 +111,29 @@ void MainWindow::indexStoped()
     ui->statusbar->showMessage(QString("Index created in %1s").arg(time.elapsed() / 1000));
 }
 
+/*
 void MainWindow::pictureClicked(QModelIndex index)
 {
     QString path = index.model()->index(index.row(),1).data().toString();
     if (path.isEmpty())
         return;
+
+    QImage image(path);
+    ui->browser->setPixmap(QPixmap::fromImage(image));
+}*/
+
+void MainWindow::on_table_activated(QModelIndex index)
+{
+    qDebug() << index.row() << "activated";
+}
+
+void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
+{
+    QString path = current.model()->index(current.row(),1).data().toString();
+    if (path.isEmpty())
+        return;
+
+    qDebug() << current.row() << " is current";
 
     QImage image(path);
     ui->browser->setPixmap(QPixmap::fromImage(image));

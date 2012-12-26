@@ -18,29 +18,12 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTableView" name="table">
-        <property name="maximumSize">
-         <size>
-          <width>180</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>150</number>
-        </attribute>
-        <attribute name="verticalHeaderDefaultSectionSize">
-         <number>150</number>
-        </attribute>
+       <widget class="ImageView" name="table">
+        
        </widget>
       </item>
       <item>
        <widget class="PixmapLabel" name="browser">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="minimumSize">
          <size>
           <width>10</width>
@@ -145,6 +128,11 @@
    <class>PixmapLabel</class>
    <extends>QLabel</extends>
    <header>pixmaplabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImageView</class>
+   <extends>QAbstractItemView</extends>
+   <header>imageview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

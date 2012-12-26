@@ -14,7 +14,9 @@ SOURCES += \
     searchresultmodel.cpp \
     imageanalyzer.cpp \
     imageanalyzertest.cpp \
-    pixmaplabel.cpp
+    pixmaplabel.cpp \
+    imageproxymodel.cpp \
+    imageview.cpp
 
 HEADERS += \
     indexthread.h \
@@ -28,7 +30,9 @@ HEADERS += \
     searchresultmodel.h \
     imageanalyzer.h \
     imageanalyzertest.h \
-    pixmaplabel.h
+    pixmaplabel.h \
+    imageproxymodel.h \
+    imageview.h
 
 FORMS += \
     mainwindow.ui \

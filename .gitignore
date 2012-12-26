@@ -4,3 +4,5 @@ object_script*
 Makefile*
 ui_*
 *.pro.user
+*.autosave
+*~

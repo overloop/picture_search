@@ -32,10 +32,12 @@ private slots:
     void on_addFolder_triggered();
     void on_color_colorSelected(QColor color);
     void on_deviation_valueChanged(int value);
+    void on_table_activated(QModelIndex);
 
     void found();
     void indexStoped();
-    void pictureClicked(QModelIndex);
+    //void pictureClicked(QModelIndex);
+    void currentImageChanged(QModelIndex current, QModelIndex);
 
 };
 
