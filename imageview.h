@@ -11,7 +11,7 @@ public:
     explicit ImageView(QWidget *parent = 0);
     
     void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *);
     QRect visualRect(const QModelIndex &index) const;
     void scrollTo(const QModelIndex &index, ScrollHint);
     QModelIndex indexAt(const QPoint &point) const;

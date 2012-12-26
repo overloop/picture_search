@@ -26,8 +26,6 @@ private:
     SearchThread searchThread;
     QTime time;
 
-    void resizeEvent(QResizeEvent *event);
-
 private slots:
     void on_addFolder_triggered();
     void on_color_colorSelected(QColor color);
@@ -36,7 +34,6 @@ private slots:
 
     void found();
     void indexStoped();
-    //void pictureClicked(QModelIndex);
     void currentImageChanged(QModelIndex current, QModelIndex);
 
 };

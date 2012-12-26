@@ -20,9 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
     //connect(ui->table,SIGNAL(clicked(QModelIndex)),this,SLOT(pictureClicked(QModelIndex)));
 
-    ui->table->setSelectionBehavior(QAbstractItemView::SelectItems);
-    ui->table->setSelectionMode(QAbstractItemView::SingleSelection);
-
     //ui->table->setEditTriggers(QAbstractItemView::CurrentChanged);
     //connect(ui->table,SIGNAL(pressed(QModelIndex))
 
@@ -32,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QSizePolicy policy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     policy.setHeightForWidth(true);
-    ui->browser->setSizePolicy(policy);
+    ui->image->setSizePolicy(policy);
 
     /*ui->browser->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     ui->browser->setGeometry(QRect(0,0,100,100));*/
@@ -48,38 +45,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-#include <QScrollBar>
-
-void MainWindow::resizeEvent(QResizeEvent* event)
-{
-    /*QRect rect = ui->table->geometry();
-    rect.setLeft( rect.left() + 150 );
-    //rect.setWidth( rect.width()/2 );
-
-    QScrollBar* bar = ui->table->verticalScrollBar();
-
-    if (bar->isVisible())
-        rect.setRight( rect.right() - bar->width() );
-
-    //QPoint p = ui->table->mapToParent(QPoint(0,0));
-    //qDebug() << p;
-
-    //rect.translate(p);
-
-    ui->browser->setGeometry(rect);*/
-
-    event->accept();
-}
 
 void MainWindow::found()
 {
+    QAbstractItemModel* previous = ui->previews->model();
     QList<SearchThread::SearchResult> result = searchThread.result();
     SearchResultModel* model = new SearchResultModel(result);
-    delete ui->table->model();
-    ui->table->setModel(model);
-    connect(ui->table->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
-
-    //ui->table->setColumnHidden(1,true);
+    ui->previews->setModel(model);
+    connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
+    delete previous;
 }
 
 void MainWindow::on_addFolder_triggered()
@@ -111,17 +85,6 @@ void MainWindow::indexStoped()
     ui->statusbar->showMessage(QString("Index created in %1s").arg(time.elapsed() / 1000));
 }
 
-/*
-void MainWindow::pictureClicked(QModelIndex index)
-{
-    QString path = index.model()->index(index.row(),1).data().toString();
-    if (path.isEmpty())
-        return;
-
-    QImage image(path);
-    ui->browser->setPixmap(QPixmap::fromImage(image));
-}*/
-
 void MainWindow::on_table_activated(QModelIndex index)
 {
     qDebug() << index.row() << "activated";
@@ -133,8 +96,8 @@ void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
     if (path.isEmpty())
         return;
 
-    qDebug() << current.row() << " is current";
+    //qDebug() << current.row() << " is current";
 
     QImage image(path);
-    ui->browser->setPixmap(QPixmap::fromImage(image));
+    ui->image->setPixmap(QPixmap::fromImage(image));
 }

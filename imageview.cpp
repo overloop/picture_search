@@ -11,7 +11,8 @@ ImageView::ImageView(QWidget *parent) :
     m_itemSize(150),
     m_columns(1)
 {
-
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
 void ImageView::paintEvent(QPaintEvent *event)
@@ -73,7 +74,7 @@ void ImageView::paintEvent(QPaintEvent *event)
     event->accept();
 }
 
-void ImageView::resizeEvent(QResizeEvent *event)
+void ImageView::resizeEvent(QResizeEvent*)
 {
     updateGeometries();
 }
@@ -88,7 +89,8 @@ void ImageView::updateGeometries()
         repaint();
     }
 
-    verticalScrollBar()->setPageStep(m_itemSize / 2);
+    verticalScrollBar()->setPageStep(size.height());
+    verticalScrollBar()->setSingleStep(m_itemSize / 10);
     int rows = this->rows();
     int height = rows * m_itemSize;
 
@@ -193,6 +195,7 @@ int ImageView::verticalOffset() const
 
 bool ImageView::isIndexHidden(const QModelIndex &index) const
 {
+    Q_UNUSED(index)
     return false;
 }
 

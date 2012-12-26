@@ -15,7 +15,6 @@ SOURCES += \
     imageanalyzer.cpp \
     imageanalyzertest.cpp \
     pixmaplabel.cpp \
-    imageproxymodel.cpp \
     imageview.cpp
 
 HEADERS += \
@@ -31,7 +30,6 @@ HEADERS += \
     imageanalyzer.h \
     imageanalyzertest.h \
     pixmaplabel.h \
-    imageproxymodel.h \
     imageview.h
 
 FORMS += \
