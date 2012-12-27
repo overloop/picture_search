@@ -15,7 +15,9 @@ SOURCES += \
     imageanalyzer.cpp \
     imageanalyzertest.cpp \
     pixmaplabel.cpp \
-    imageview.cpp
+    imageview.cpp \
+    directoriesmodel.cpp \
+    directoriesdialog.cpp
 
 HEADERS += \
     indexthread.h \
@@ -30,11 +32,14 @@ HEADERS += \
     imageanalyzer.h \
     imageanalyzertest.h \
     pixmaplabel.h \
-    imageview.h
+    imageview.h \
+    directoriesmodel.h \
+    directoriesdialog.h
 
 FORMS += \
     mainwindow.ui \
-    imageanalyzertest.ui
+    imageanalyzertest.ui \
+    directoriesdialog.ui
 
 
 

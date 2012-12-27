@@ -8,9 +8,10 @@ class IndexJob
 {
 public:
     enum Type {
-        AddDirectory,
+        AddDirectories,
         ScanDirectories,
-        AddFiles
+        AddFiles,
+        RemoveDirectories
     };
 
     IndexJob() : m_done(false), m_index(0) {}
@@ -23,20 +24,6 @@ public:
 protected:
     bool m_done;
     int m_index;
-};
-
-class IndexJobAddDirectory : public IndexJob
-{
-public:
-    IndexJobAddDirectory(const QString& dir, bool subdirs) : m_dir(dir), m_subdirs(subdirs) {}
-    int type() {return AddDirectory;}
-    int make();
-    bool hasRecord(const QString& path);
-    QStringList result() {return m_dirs;}
-private:
-    QStringList m_dirs;
-    QString m_dir;
-    bool m_subdirs;
 };
 
 class IndexJobScanDirectories : public IndexJob
@@ -62,6 +49,31 @@ public:
 protected:
     QStringList m_files;
     QPair<QString,int> m_dirid;
+};
+
+class IndexJobRemoveDirectories : public IndexJob
+{
+public:
+    IndexJobRemoveDirectories(const QStringList& dirs) : m_dirs(dirs) {}
+    int type() {return RemoveDirectories;}
+    int make();
+
+protected:
+    QStringList m_dirs;
+};
+
+class IndexJobAddDirectories : public IndexJob
+{
+public:
+    IndexJobAddDirectories(const QList<QPair<QString,bool> >& dirs) : m_dirs(dirs) {}
+    int type() {return AddDirectories;}
+    int make();
+    void makeOne(QString a_dir, bool subdirs);
+    bool hasRecord(const QString& path);
+    QStringList result() {return m_resDirs;}
+protected:
+    QList<QPair<QString,bool> > m_dirs;
+    QStringList m_resDirs;
 };
 
 #endif // INDEXJOB_H

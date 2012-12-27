@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>448</height>
+    <width>639</width>
+    <height>499</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,8 +37,8 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>10</width>
-         <height>10</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="text">
@@ -48,42 +48,53 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Color:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="ColorSelectPushButton" name="color">
-        <property name="text">
-         <string>Button</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Deviation:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="deviation">
-        <property name="maximum">
-         <number>200</number>
-        </property>
-        <property name="value">
-         <number>50</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Search options</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Color:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ColorSelectPushButton" name="color">
+         <property name="text">
+          <string>Button</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Deviation:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="deviation">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>50</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item>
      <widget class="QProgressBar" name="progress">
@@ -109,22 +120,52 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>594</width>
+     <width>639</width>
      <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Index</string>
     </property>
-    <addaction name="addFolder"/>
+    <addaction name="selectDirectories"/>
    </widget>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>Database</string>
+    </property>
+    <addaction name="createDatabase"/>
+    <addaction name="openDatabase"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionCredits"/>
+   </widget>
+   <addaction name="menuDatabase"/>
    <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="addFolder">
+  <action name="selectDirectories">
    <property name="text">
-    <string>Add Folder</string>
+    <string>Select Directories</string>
+   </property>
+  </action>
+  <action name="createDatabase">
+   <property name="text">
+    <string>Create</string>
+   </property>
+  </action>
+  <action name="openDatabase">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionCredits">
+   <property name="text">
+    <string>About Picture Search</string>
    </property>
   </action>
  </widget>

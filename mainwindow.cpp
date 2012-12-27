@@ -27,9 +27,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(ui->progress,1);
     ui->statusbar->addWidget(ui->status,1);
 
-    QSizePolicy policy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    /*QSizePolicy policy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     policy.setHeightForWidth(true);
-    ui->image->setSizePolicy(policy);
+    ui->image->setSizePolicy(policy);*/
 
     /*ui->browser->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     ui->browser->setGeometry(QRect(0,0,100,100));*/
@@ -38,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QPainter p(&image);
     p.fillRect(QRect(0,0,10,10),QColor(Qt::yellow));
     ui->browser->setPixmap(QPixmap::fromImage(image));*/
+
+
+    int half = this->size().width()/2;
+    ui->splitter->setSizes( QList<int>() << half << half );
+
 }
 
 MainWindow::~MainWindow()
@@ -56,9 +61,12 @@ void MainWindow::found()
     delete previous;
 }
 
-void MainWindow::on_addFolder_triggered()
+#include "directoriesdialog.h"
+#include "directoriesmodel.h"
+
+void MainWindow::on_selectDirectories_triggered()
 {
-    QString path = QFileDialog::getExistingDirectory(this);
+    /*QString path = QFileDialog::getExistingDirectory(this);
     if (path.isEmpty())
         return;
     if (QMessageBox::information(this, "Subdirectories", "Add subdirectories", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
@@ -67,7 +75,28 @@ void MainWindow::on_addFolder_triggered()
     } else {
         indexThread.addDir(path,false);
     }
-    time.start();
+    time.start();*/
+
+    DirectoriesDialog dialog;
+
+    QList<DirectoriesModel::Item> before = static_cast<DirectoriesModel*>(dialog.model())->dirs();
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QList<DirectoriesModel::Item> after = static_cast<DirectoriesModel*>(dialog.model())->dirs();
+        QList<DirectoriesModel::Item> toAdd;
+        QList<QString> toRemove;
+        bool rescan = dialog.rescan();
+
+        DirectoriesModel::diff(before,after,rescan,toAdd,toRemove);
+
+        if (toAdd.size()>0)
+            indexThread.addDirs(toAdd);
+        if (toRemove.size()>0)
+            indexThread.removeDirs(toRemove);
+
+        time.start();
+    }
 }
 
 void MainWindow::on_color_colorSelected(QColor color)
@@ -83,11 +112,6 @@ void MainWindow::on_deviation_valueChanged(int value)
 void MainWindow::indexStoped()
 {
     ui->statusbar->showMessage(QString("Index created in %1s").arg(time.elapsed() / 1000));
-}
-
-void MainWindow::on_table_activated(QModelIndex index)
-{
-    qDebug() << index.row() << "activated";
 }
 
 void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)

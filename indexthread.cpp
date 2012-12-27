@@ -6,8 +6,8 @@
 
 IndexThread::IndexThread(QObject *parent) :
     QThread(parent),
-    m_abort(false),
-    m_jobIsRunning(false)
+    m_abort(false)/*,
+    m_jobIsRunning(false)*/
 {
 
 }
@@ -21,38 +21,20 @@ IndexThread::~IndexThread()
     wait();
 }
 
-void IndexThread::addDir(const QString& d, bool subdirs)
+void IndexThread::addDirs(const QList<QPair<QString,bool> >& dirs)
 {
-    m_jobs.addDir(d,subdirs);
+    m_jobs.queueAddDirs(dirs);
+    startOrResume();
+}
 
-    /*QStringList dirs;
-    QStringList dirsResult;
-    dirs.append(QDir(d));
+void IndexThread::removeDirs(const QStringList& dirs)
+{
+    m_jobs.queueRemoveDirs(dirs);
+    startOrResume();
+}
 
-    if (subdirs)
-    {
-        do {
-            QString dirAsString = dirs.takeFirst();
-            QDir dir(dirAsString);
-            QStringList subdirNames = dir.entryList( QDir::Dirs );
-            QString subdirName;
-            foreach(subdirName,subdirNames)
-            {
-                QString path = dir.filePath(subdirName);
-                dirs.append(path);
-                dirsResult.append(path);
-            }
-        } while (dirs.size() > 0);
-    }
-    else
-    {
-        dirsResult.append(d);
-    }
-
-    mutex.lock();
-    m_dirs.append(dirsResult);
-    mutex.unlock();*/
-
+void IndexThread::startOrResume()
+{
     if (!isRunning())
     {
         start(LowPriority);

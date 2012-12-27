@@ -15,4 +15,8 @@ void ColorPushButton::paintEvent(QPaintEvent* event)
 {
     QPainter p(this);
     p.fillRect(event->rect(), m_color);
+
+    QPen pen(palette().color(QPalette::Foreground));
+    p.setPen(pen);
+    p.drawRect(QRect(QPoint(0,0),this->size()-QSize(1,1)));
 }

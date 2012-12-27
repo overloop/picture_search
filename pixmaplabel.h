@@ -5,7 +5,7 @@
 
 #include <QLabel>
 
-class PixmapLabel : public QWidget
+class PixmapLabel : public QFrame
 {
     Q_OBJECT
 public:

@@ -31,13 +31,10 @@ int SearchResultModel::columnCount(const QModelIndex &parent) const
 
 Qt::ItemFlags SearchResultModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index)
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
-QVariant SearchResultModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-	return QVariant();
-}
 
 QVariant SearchResultModel::data(const QModelIndex &index, int role) const
 {
@@ -61,8 +58,14 @@ QVariant SearchResultModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
+#if 0
+
 bool SearchResultModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    Q_UNUSED(index)
+    Q_UNUSED(value)
+    Q_UNUSED(role)
+
 	return false;
 }
 
@@ -75,3 +78,13 @@ bool SearchResultModel::removeRows(int row, int count, const QModelIndex &parent
 {
 	return false;
 }
+
+QVariant SearchResultModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(role)
+    return QVariant();
+}
+
+#endif

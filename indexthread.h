@@ -17,8 +17,12 @@ public:
 
     //bool isJobRunning() {return m_jobIsRunning;}
 
+    void addDirs(const QList<QPair<QString,bool> >& dirs);
+    void removeDirs(const QStringList& dirs);
+
 protected:
     virtual void run();
+    void startOrResume();
 
     //QStringList addFilesToQueue(const QString& dir, int progressValue);
     //void addFileToIndex(const QString& file, int progressValue);
@@ -26,7 +30,7 @@ protected:
     QMutex mutex;
     QWaitCondition waitCondition;
     IndexJobs m_jobs;
-    volatile bool m_jobIsRunning;
+    //volatile bool m_jobIsRunning;
     volatile bool m_abort;
 
     //bool setJobRunning(bool state) { QMutexLocker locker(&mutex); m_jobIsRunning = state; }
@@ -37,7 +41,7 @@ signals:
     void indexStoped();
     
 public slots:
-    void addDir(const QString& dir, bool subdirs = true);
+
 };
 
 #endif // INDEXTHREAD_H

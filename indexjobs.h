@@ -12,10 +12,12 @@ class IndexJobs
 {
 public:
 
-    void addDir(const QString& dir, bool subdirs) {QMutexLocker locker(&mutex); m_directoriesToAdd.append(QPair<QString,bool>(dir,subdirs));}
-    bool isEmpty() {QMutexLocker locker(&mutex); return m_directoriesToAdd.isEmpty() && m_directoriesToScan.isEmpty() && m_filesToAdd.isEmpty(); }
+    bool isEmpty();
     IndexJob* takeFirst();
     void acquireResult(IndexJob* job);
+
+    void queueAddDirs(const QList<QPair<QString,bool> >& dirs);
+    void queueRemoveDirs(const QStringList& dirs);
 
 protected:
     QMutex mutex;
@@ -23,6 +25,7 @@ protected:
     QList< QPair<QString,bool> > m_directoriesToAdd;
     QStringList m_directoriesToScan;
     QStringList m_filesToAdd;
+    QStringList m_directoriesToRemove;
 
 };
 

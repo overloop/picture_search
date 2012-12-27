@@ -23,6 +23,7 @@ public:
     QString dbUser;
     QString dbPass;
 };
+
 QSqlDatabase openDb(const DatabaseSettings& settings);
 void createTables(const QString& driver);
 

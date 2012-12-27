@@ -6,12 +6,13 @@
 #include <QPainter>
 
 PixmapLabel::PixmapLabel(QWidget *parent) :
-    QWidget(parent)
+    QFrame(parent)
 {
     //label = new QLabel(this);
     //label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     //label->setScaledContents(true);
     //this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 }
 
 void PixmapLabel::resizeEvent(QResizeEvent *event)
@@ -29,6 +30,9 @@ void PixmapLabel::paintEvent(QPaintEvent * event)
 {
     QPainter p(this);
 
+    QPen foregorund(palette().color(QPalette::Foreground));
+
+
     p.fillRect(event->rect(),QColor(Qt::white));
 
     if (!pixmap.isNull())
@@ -40,6 +44,13 @@ void PixmapLabel::paintEvent(QPaintEvent * event)
         QRect rect(rest.width(),rest.height(),pixmapSize.width(),pixmapSize.height());
         p.drawPixmap(rect,pixmap);
     }
+
+    /*p.setPen(foregorund);
+    p.drawRect(QRect(QPoint(0,0),this->size()-QSize(1,1)));*/
+
+    drawFrame(&p);
+
+    //QFrame::paintEvent(event);
 }
 
 QSize PixmapLabel::sizeHint()

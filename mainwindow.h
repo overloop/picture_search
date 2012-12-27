@@ -27,10 +27,9 @@ private:
     QTime time;
 
 private slots:
-    void on_addFolder_triggered();
+    void on_selectDirectories_triggered();
     void on_color_colorSelected(QColor color);
     void on_deviation_valueChanged(int value);
-    void on_table_activated(QModelIndex);
 
     void found();
     void indexStoped();
