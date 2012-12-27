@@ -3,9 +3,7 @@
 #include <QDebug>
 
 #define ARRAY_INDEX(a,b,c,a_s,b_s,c_s) (a+b*a_s+c*a_s*b_s)
-#define COMMON_COLORS_COUNT 10
 
-#define IMAGE_SIZE_PREVIEW 200
 //#include <QSize>
 #include <QImage>
 #include <math.h>

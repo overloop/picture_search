@@ -28,6 +28,8 @@ private slots:
 
     void on_add_clicked();
     void on_remove_clicked();
+    void on_userMode_clicked(bool userMode);
+
     void currentChanged(QModelIndex,QModelIndex);
     void selectionChanged(QItemSelection,QItemSelection);
 

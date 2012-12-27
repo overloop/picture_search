@@ -15,25 +15,15 @@ PixmapLabel::PixmapLabel(QWidget *parent) :
     setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 }
 
-void PixmapLabel::resizeEvent(QResizeEvent *event)
-{
-    //resizeLabel(this->size());
-    //qDebug() << event->oldSize() << event->size();
-    /*QSize size = event->size();
-    if (size.width()>0 && size.height()>0)
-        resizeLabel(size);*/
-
-    event->accept();
-}
 
 void PixmapLabel::paintEvent(QPaintEvent * event)
 {
     QPainter p(this);
 
-    QPen foregorund(palette().color(QPalette::Foreground));
+    //QPen foregorund(palette().color(QPalette::Foreground));
+    QBrush background(palette().color(QPalette::Base));
 
-
-    p.fillRect(event->rect(),QColor(Qt::white));
+    p.fillRect(event->rect(),background);
 
     if (!pixmap.isNull())
     {

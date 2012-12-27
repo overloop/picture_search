@@ -1,67 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DirectoriesDialog</class>
- <widget class="QDialog" name="DirectoriesDialog">
+ <class>OpenDatabaseDialog</class>
+ <widget class="QDialog" name="OpenDatabaseDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>569</width>
-    <height>412</height>
+    <width>383</width>
+    <height>189</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Indexed Directories</string>
+   <string>Database settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="table"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="add">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>add</string>
+        <string>Pass:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="remove">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>remove</string>
+        <string>Host:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="userMode">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>key directories</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>Driver:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="rescan">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>rescan for new files</string>
+        <string>User:</string>
        </property>
       </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Database:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="dbName"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="hostName"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="driver"/>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="dbUser"/>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="dbPass"/>
      </item>
     </layout>
    </item>
@@ -82,7 +85,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>DirectoriesDialog</receiver>
+   <receiver>OpenDatabaseDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -98,7 +101,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>DirectoriesDialog</receiver>
+   <receiver>OpenDatabaseDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

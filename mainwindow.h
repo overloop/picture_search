@@ -30,6 +30,7 @@ private slots:
     void on_selectDirectories_triggered();
     void on_color_colorSelected(QColor color);
     void on_deviation_valueChanged(int value);
+    void on_openDatabase_triggered();
 
     void found();
     void indexStoped();

@@ -7,6 +7,7 @@ class DirectoriesModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+
     typedef QPair<QString,bool> Item;
 
    DirectoriesModel(QObject* parent = 0);
@@ -24,11 +25,20 @@ public:
 
    static void diff(const QList<Item>& before, const QList<Item>& after, bool rescan, QList<Item>& added, QList<QString>& removed);
 
-   QList<Item> dirs() const {return m_dirs;}
+   QList<Item> dirs(bool userMode) const {if (userMode) return m_dirsUser; else return m_dirsAll;}
+
+   bool mode() const {return m_userMode;}
+
+public slots:
+
+   void setMode(bool userMode);
 
 protected:
 
-   QList<Item> m_dirs;
+   QList<Item> m_dirsUser;
+   QList<Item> m_dirsAll;
+   bool m_userMode;
+   bool m_write;
 };
 
 #endif //DIRECTORIESMODEL_H

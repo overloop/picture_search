@@ -11,7 +11,6 @@ class PixmapLabel : public QFrame
 public:
     explicit PixmapLabel(QWidget *parent = 0);
 
-    void resizeEvent(QResizeEvent *event);
     void setPixmap(const QPixmap& pixmap);
     void setText(const QString& text) {Q_UNUSED(text);}
 

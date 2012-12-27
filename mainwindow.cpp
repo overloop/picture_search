@@ -5,10 +5,15 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include "searchresultmodel.h"
+#include "directoriesdialog.h"
+#include "directoriesmodel.h"
+#include "opendatabasedialog.h"
 
 #include <QImage>
 #include <QPainter>
 #include <QDebug>
+#include <QSqlError>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,9 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->table->setEditTriggers(QAbstractItemView::CurrentChanged);
     //connect(ui->table,SIGNAL(pressed(QModelIndex))
 
-    ui->status->setText("");
     ui->statusbar->addWidget(ui->progress,1);
-    ui->statusbar->addWidget(ui->status,1);
 
     /*QSizePolicy policy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     policy.setHeightForWidth(true);
@@ -43,6 +46,10 @@ MainWindow::MainWindow(QWidget *parent) :
     int half = this->size().width()/2;
     ui->splitter->setSizes( QList<int>() << half << half );
 
+    ui->searchOptions->setEnabled(false);
+    ui->selectDirectories->setEnabled(false);
+
+    QTimer::singleShot(0,this,SLOT(on_openDatabase_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -61,8 +68,7 @@ void MainWindow::found()
     delete previous;
 }
 
-#include "directoriesdialog.h"
-#include "directoriesmodel.h"
+
 
 void MainWindow::on_selectDirectories_triggered()
 {
@@ -79,16 +85,24 @@ void MainWindow::on_selectDirectories_triggered()
 
     DirectoriesDialog dialog;
 
-    QList<DirectoriesModel::Item> before = static_cast<DirectoriesModel*>(dialog.model())->dirs();
+    DirectoriesModel* model = static_cast<DirectoriesModel*>(dialog.model());
+
+    QList<DirectoriesModel::Item> beforeUser = model->dirs(true);
+    QList<DirectoriesModel::Item> beforeAll = model->dirs(false);
 
     if (dialog.exec() == QDialog::Accepted)
     {
-        QList<DirectoriesModel::Item> after = static_cast<DirectoriesModel*>(dialog.model())->dirs();
+        bool userMode = model->mode();
+
+        QList<DirectoriesModel::Item> after = model->dirs(userMode);
         QList<DirectoriesModel::Item> toAdd;
         QList<QString> toRemove;
         bool rescan = dialog.rescan();
 
-        DirectoriesModel::diff(before,after,rescan,toAdd,toRemove);
+        if (userMode)
+            DirectoriesModel::diff(beforeUser,after,rescan,toAdd,toRemove);
+        else
+            DirectoriesModel::diff(beforeAll,after,rescan,toAdd,toRemove);
 
         if (toAdd.size()>0)
             indexThread.addDirs(toAdd);
@@ -111,17 +125,49 @@ void MainWindow::on_deviation_valueChanged(int value)
 
 void MainWindow::indexStoped()
 {
-    ui->statusbar->showMessage(QString("Index created in %1s").arg(time.elapsed() / 1000));
+    ui->statusbar->showMessage(QString("Operation finished in %1s").arg(time.elapsed() / 1000));
 }
 
 void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
 {
     QString path = current.model()->index(current.row(),1).data().toString();
+
+    //qDebug() << path << " <- path";
+
     if (path.isEmpty())
         return;
 
-    //qDebug() << current.row() << " is current";
+    setWindowTitle(QString("Picture Search - ") + QDir::toNativeSeparators(path));
 
     QImage image(path);
     ui->image->setPixmap(QPixmap::fromImage(image));
+}
+
+
+
+void MainWindow::on_openDatabase_triggered()
+{
+    OpenDatabaseDialog dialog;
+    //dialog.setSettings(DatabaseSettings::defaults("QSQLITE"));
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        DatabaseSettings settings = dialog.settings();
+        QSqlDatabase db = openDb(settings);
+        if (!db.isOpen())
+        {
+            QMessageBox::critical(this,"Error",db.lastError().text());
+            return ;
+        }
+
+        if (!tablesExist())
+            createTables(settings.driver);
+
+        ui->searchOptions->setEnabled(true);
+        ui->selectDirectories->setEnabled(true);
+
+        DatabaseSettings::setDefaults(settings);
+    }
+
+
 }

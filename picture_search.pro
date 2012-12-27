@@ -17,7 +17,9 @@ SOURCES += \
     pixmaplabel.cpp \
     imageview.cpp \
     directoriesmodel.cpp \
-    directoriesdialog.cpp
+    directoriesdialog.cpp \
+    opendatabasedialog.cpp \
+    databasesettings.cpp
 
 HEADERS += \
     indexthread.h \
@@ -34,12 +36,15 @@ HEADERS += \
     pixmaplabel.h \
     imageview.h \
     directoriesmodel.h \
-    directoriesdialog.h
+    directoriesdialog.h \
+    opendatabasedialog.h \
+    databasesettings.h
 
 FORMS += \
     mainwindow.ui \
     imageanalyzertest.ui \
-    directoriesdialog.ui
+    directoriesdialog.ui \
+    opendatabasedialog.ui
 
 
 

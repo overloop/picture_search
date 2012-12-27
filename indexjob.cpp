@@ -230,7 +230,7 @@ void IndexJobAddDirectories::makeOne(QString oneDir, bool subdirs)
         SqlQuery q;
         q.prepare("INSERT into directory(path,subdirs,user) VALUES(?,?,?)");
         q.addBindValue(oneDir);
-        q.addBindValue(subdirs);
+        q.addBindValue(subdirs?1:0);
         q.addBindValue(1);
         Q_ASSERT(q.exec());
     }

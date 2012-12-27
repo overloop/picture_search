@@ -48,7 +48,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="searchOptions">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -106,13 +106,6 @@
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QLabel" name="status">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menu">
@@ -134,14 +127,13 @@
     <property name="title">
      <string>Database</string>
     </property>
-    <addaction name="createDatabase"/>
     <addaction name="openDatabase"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
-    <addaction name="actionCredits"/>
+    <addaction name="about"/>
    </widget>
    <addaction name="menuDatabase"/>
    <addaction name="menuFile"/>
@@ -163,7 +155,7 @@
     <string>Open</string>
    </property>
   </action>
-  <action name="actionCredits">
+  <action name="about">
    <property name="text">
     <string>About Picture Search</string>
    </property>

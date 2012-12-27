@@ -83,3 +83,9 @@ bool DirectoriesDialog::rescan() const
 {
     return ui->rescan->isChecked();
 }
+
+void DirectoriesDialog::on_userMode_clicked(bool userMode)
+{
+    DirectoriesModel* model = static_cast<DirectoriesModel*>(ui->table->model());
+    model->setMode(userMode);
+}
