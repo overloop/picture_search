@@ -1,13 +1,34 @@
-#include "imageanalyzertest.h"
-#include "ui_imageanalyzertest.h"
+#include "colorextractortest.h"
+#include "ui_colorextractortest.h"
 
-#include "imageanalyzer.h"
+#include "colorextractorsimple.h"
+#include "colorextractorneuquant.h"
 
 #include <QPainter>
 
-ImageAnalyzerTest::ImageAnalyzerTest(QStringList paths, QWidget *parent) :
+void ColorExtractorTest::drawPalette(const QList<QColor>& colors, QRect rect, QPainter* p)
+{
+    int h = rect.height();
+    //int w = rect.width();
+
+    int n = colors.size();
+    int ch = h / n;
+
+    rect.setHeight(ch);
+
+    p->save();
+    QColor c;
+    foreach(c,colors)
+    {
+        p->fillRect(rect,c);
+        rect.translate(QPoint(0,ch));
+    }
+    p->restore();
+}
+
+ColorExtractorTest::ColorExtractorTest(QStringList paths, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ImageAnalyzerTest),
+    ui(new Ui::ColorExtractorTest),
     m_paths(paths),
     m_index(-1)
 {
@@ -15,41 +36,42 @@ ImageAnalyzerTest::ImageAnalyzerTest(QStringList paths, QWidget *parent) :
     on_next_clicked();
 }
 
-ImageAnalyzerTest::~ImageAnalyzerTest()
+ColorExtractorTest::~ColorExtractorTest()
 {
     delete ui;
 }
 
-void ImageAnalyzerTest::on_next_clicked()
+void ColorExtractorTest::on_next_clicked()
 {
     m_index++;
     int paths_size = m_paths.size();
     QString path = m_paths.at(m_index % paths_size);
 
 
-    QList<ImageAnalyzerOptions> options;
+    QList<ColorExtractrorOptions> options;
     for (int i=8;i<30;i=i+2)
     {
         int h = i*2;
         int s = i;
         int l = i;
-        options << ImageAnalyzerOptions(15,h,s,l);
+        options << ColorExtractrorOptions(15,h,s,l);
     }
 
     QImage image(path);
-    ImageAnalyzer analyzer(image);
+    ColorExtractorSimple extractor(image);
 
     int w = 400;
     int h = 400;
 
     QImage palete(w,h,QImage::Format_RGB32);
+
     QPainter painter(&palete);
 
     int n = options.size();
     for (int i=0;i<n;i++)
     {
-        ImageAnalyzerOptions opt = options.at(i);
-        QList<QColor> common = analyzer.analyze(opt);
+        ColorExtractrorOptions opt = options.at(i);
+        QList<QColor> common = extractor.extract(opt);
         int m = common.size();
         for (int j=0;j<m;j++)
         {
@@ -76,11 +98,17 @@ void ImageAnalyzerTest::on_next_clicked()
                 painter.drawText(rect, Qt::AlignCenter, QString("l=%1").arg(opt.l));
                 break;
             }
-
         }
     }
 
+    QImage neuquantPalette(w/10,h,QImage::Format_RGB32);
+
+    ColorExtractorNeuquant neuquant(image);
+    QList<QColor> common = neuquant.extract();
+    QPainter neuquantPainter(&neuquantPalette);
+    drawPalette(common,QRect(QPoint(0,0),neuquantPalette.size()),&neuquantPainter);
+
     ui->image->setPixmap(QPixmap::fromImage(image.scaled(QSize(w,h),Qt::KeepAspectRatio)));
     ui->colors->setPixmap(QPixmap::fromImage(palete));
-
+    ui->neuquant->setPixmap(QPixmap::fromImage(neuquantPalette));
 }

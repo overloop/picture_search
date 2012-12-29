@@ -5,7 +5,9 @@
 #include <QVariant>
 #include <QBuffer>
 #include <QImage>
-#include "imageanalyzer.h"
+
+#include "colorextractorsimple.h"
+#include "colorextractorneuquant.h"
 
 int IndexJobScanDirectories::make()
 {
@@ -43,17 +45,17 @@ int IndexJobAddFiles::make()
         if (!hasRecord(name,id))
         {
             QImage image(fileName);
-            ImageAnalyzer analyzer(image);
-            QList<QColor> common = analyzer.analyze();
+            ColorExtractorSimple extractor(image);
+            QList<QColor> common = extractor.extract();
             QColor color;
 
-            QImage preview = analyzer.scaled().scaled(QSize(150,150),Qt::KeepAspectRatio);
+            QImage preview = extractor.scaled().scaled(QSize(150,150),Qt::KeepAspectRatio);
 
             QByteArray previewByteArray;
             QBuffer buf(&previewByteArray);
             buf.open(QIODevice::WriteOnly);
             preview.save(&buf,"JPEG");
-            //analyzer.scaled().save(&buf,"JPEG");
+            //extractor.scaled().save(&buf,"JPEG");
 
             SqlQuery q;
             q.prepare("INSERT INTO file(directory_id,path,preview) VALUES(?,?,?)");

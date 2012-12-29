@@ -12,14 +12,17 @@ SOURCES += \
     mainwindow.cpp \
     colorselectpushbutton.cpp \
     searchresultmodel.cpp \
-    imageanalyzer.cpp \
-    imageanalyzertest.cpp \
+    colorextractortest.cpp \
     pixmaplabel.cpp \
     imageview.cpp \
     directoriesmodel.cpp \
     directoriesdialog.cpp \
     opendatabasedialog.cpp \
-    databasesettings.cpp
+    databasesettings.cpp \
+    NEUQUANT.C \
+    colorextractorsimple.cpp \
+    colorextractor.cpp \
+    colorextractorneuquant.cpp
 
 HEADERS += \
     indexthread.h \
@@ -31,20 +34,33 @@ HEADERS += \
     mainwindow.h \
     colorselectpushbutton.h \
     searchresultmodel.h \
-    imageanalyzer.h \
-    imageanalyzertest.h \
+    colorextractortest.h \
     pixmaplabel.h \
     imageview.h \
     directoriesmodel.h \
     directoriesdialog.h \
     opendatabasedialog.h \
-    databasesettings.h
+    databasesettings.h \
+    NEUQUANT.H \
+    colorextractorsimple.h \
+    colorextractor.h \
+    colorextractorneuquant.h
 
 FORMS += \
     mainwindow.ui \
-    imageanalyzertest.ui \
+    colorextractortest.ui \
     directoriesdialog.ui \
     opendatabasedialog.ui
+
+
+
+
+
+
+
+
+
+
 
 
 

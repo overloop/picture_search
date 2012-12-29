@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImageAnalyzerTest</class>
- <widget class="QWidget" name="ImageAnalyzerTest">
+ <class>ColorExtractorTest</class>
+ <widget class="QWidget" name="ColorExtractorTest">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -25,6 +25,13 @@
      </item>
      <item>
       <widget class="QLabel" name="colors">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="neuquant">
        <property name="text">
         <string>TextLabel</string>
        </property>

@@ -1,20 +1,22 @@
-#include "imageanalyzer.h"
+#include "colorextractorsimple.h"
 
 #include <QDebug>
 
-#define ARRAY_INDEX(a,b,c,a_s,b_s,c_s) (a+b*a_s+c*a_s*b_s)
+//index in 3d array (which is actually 1d array)
+//x,y,z - indexes, x_s - 1st dimension size, y_s - 2nd dimension size, z_s - 3rd dimension size
+#define ARRAY_INDEX(x,y,z,x_s,y_s,z_s) (x+y*x_s+z*x_s*y_s)
 
 //#include <QSize>
 #include <QImage>
 #include <math.h>
 
-
-ImageAnalyzer::ImageAnalyzer(const QImage &image, QSize scaledSize /*= QSize(IMAGE_SIZE_CALCULATION,IMAGE_SIZE_CALCULATION)*/)
+ColorExtractorSimple::ColorExtractorSimple(const QImage &image, QSize scaledSize)
+    : ColorExtractor(image,scaledSize)
 {
-    m_scaled = image.scaled(scaledSize,Qt::KeepAspectRatio);
+
 }
 
-QList<QColor> ImageAnalyzer::analyze(const ImageAnalyzerOptions& options/* = ImageAnalyzerOptions()*/)
+QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& options/* = ImageAnalyzerOptions()*/)
 {
     QList<QColor> colors;
 

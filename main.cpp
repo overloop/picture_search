@@ -8,8 +8,8 @@
 
 //#include "colorpushbutton.h"
 #include "mainwindow.h"
+#include "colorextractortest.h"
 
-#include "imageanalyzertest.h"
 
 int main(int argc, char** argv)
 {
@@ -17,6 +17,7 @@ int main(int argc, char** argv)
     /*QString driver("QMYSQL");
     openDb(DatabaseSettings(driver,"localhost","picture_search","root",""));*/
     //createTables(driver);
+
     MainWindow w;
     w.show();
 
@@ -58,7 +59,17 @@ QStringList paths = QStringList() << "I:/tmp3/test/77f59507b07295aed7c24cba7718c
                                   << "I:/tmp3/test/9fca21e6ffbac13f5ebf6ee3cacec77f.png"
                                   << "I:/tmp3/test/9fd395eb2946ea01c805bd47b2ad8597.jpg";
 
-ImageAnalyzerTest test(paths);
+QStringList paths = QStringList() << "D:/dl/random/random/1344475786233.jpg"
+                                  << "D:/dl/random/random/1345906511172.jpg"
+                                  << "D:/dl/random/random/1346402081261.jpg"
+                                  << "D:/dl/random/random/1346402695927.jpg"
+                                  << "D:/dl/random/random/1346406479080.jpg"
+                                  << "D:/dl/random/random/1346674995461.jpg"
+                                  << "D:/dl/random/random/1346977204149.jpg"
+                                  << "D:/dl/random/random/1347152058391.jpg"
+                                  << "D:/dl/random/random/1347166483664.jpg";
+
+ColorExtractorTest test(paths);
 test.show();
 
 
