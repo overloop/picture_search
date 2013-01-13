@@ -1,29 +1,25 @@
 #ifndef DATABASESETTINGS_H
 #define DATABASESETTINGS_H
 
-#include <QString>
-#include "QSqlDatabase"
+#include <QStringList>
 
-class DatabaseSettings {
+class DatabaseSettings : public QStringList
+{
 public:
-    DatabaseSettings();
-    DatabaseSettings(const QString& driver, const QString& hostName, const QString& dbName, const QString& dbUser, const QString& dbPass)
-        : driver(driver), hostName(hostName), dbName(dbName), dbUser(dbUser), dbPass(dbPass) {}
-
-    QString driver;
-    QString hostName;
-    QString dbName;
-    QString dbUser;
-    QString dbPass;
-
-    static DatabaseSettings defaults(const QString& driver);
-    static void setDefaults(const DatabaseSettings& settings);
-
+    DatabaseSettings()
+    {
+        for (int i=0;i<SIZE;i++)
+            append(QString());
+    }
+    enum INDEX {
+        DRIVER = 0,
+        HOST,
+        DATABASE,
+        USER,
+        PASS,
+        SIZE
+    };
 };
 
-//let it be here
-QSqlDatabase openDb(const DatabaseSettings& settings);
-void createTables(const QString& driver);
-bool tablesExist();
 
 #endif // DATABASESETTINGS_H

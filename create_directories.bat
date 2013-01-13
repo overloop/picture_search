@@ -1,0 +1,1 @@
+mkdir %APPDATA%\picture_search

@@ -1,46 +1,18 @@
-#if 0
+#include "database.h"
 
-#include "databasesettings.h"
-#include <QSettings>
 #include "sqlquery.h"
-#include <QStringList>
+#include "databasesettings.h"
 
-DatabaseSettings::DatabaseSettings()
-{
-
-}
-
-QSqlDatabase openDb(const DatabaseSettings& settings) {
-
-    QSqlDatabase db = QSqlDatabase::addDatabase(settings.driver);
-
-    if (!settings.dbName.isEmpty())
-        db.setDatabaseName(settings.dbName);
-
-    if (!settings.hostName.isEmpty())
-        db.setHostName(settings.hostName);
-
-    if (!settings.dbUser.isEmpty())
-        db.setUserName(settings.dbUser);
-
-    if (!settings.dbPass.isEmpty())
-        db.setPassword(settings.dbPass);
-
-    //Q_ASSERT(db.open());
-
-    db.open();
-
-    return db;
-}
-
-bool tablesExist()
+/*static*/
+bool Database::tablesExist()
 {
     SqlQuery q;
     q.prepare("SELECT count(*) FROM directory JOIN file JOIN color");
     return q.exec();
 }
 
-void createTables(const QString& driver)
+/*static*/
+void Database::createTables(const QString& driver)
 {
     QStringList queries;
 
@@ -101,47 +73,28 @@ void createTables(const QString& driver)
         Q_ASSERT(q.exec());
     }
 
-
-}
-
-
-
-/*static*/
-DatabaseSettings DatabaseSettings::defaults(const QString& driver)
-{
-    QSettings settings("settings.ini",QSettings::IniFormat);
-
-    if (driver == QString("QMYSQL") || driver == QString("QSQLITE"))
-    {
-        settings.beginGroup(driver);
-        return DatabaseSettings(driver,
-        settings.value("host").toString(),
-        settings.value("database").toString(),
-        settings.value("user").toString(),
-        settings.value("pass").toString());
-    } else {
-
-    }
-    return DatabaseSettings();
 }
 
 /*static*/
-void DatabaseSettings::setDefaults(const DatabaseSettings& settings)
+QSqlDatabase Database::open(const DatabaseSettings& settings)
 {
-    QSettings s("settings.ini",QSettings::IniFormat);
-    QString driver = settings.driver;
+    QSqlDatabase db = QSqlDatabase::addDatabase(settings.at(DatabaseSettings::DRIVER));
 
-    if (driver == QString("QMYSQL") || driver == QString("QSQLITE"))
-    {
-        s.beginGroup(driver);
+    if (!settings.at(DatabaseSettings::DATABASE).isEmpty())
+        db.setDatabaseName(settings.at(DatabaseSettings::DATABASE));
 
-        s.setValue("host",settings.hostName);
-        s.setValue("database",settings.dbName);
-        s.setValue("user",settings.dbUser);
-        s.setValue("pass",settings.dbPass);
+    if (!settings.at(DatabaseSettings::HOST).isEmpty())
+        db.setHostName(settings.at(DatabaseSettings::HOST));
 
-    }
+    if (!settings.at(DatabaseSettings::USER).isEmpty())
+        db.setUserName(settings.at(DatabaseSettings::USER));
 
+    if (!settings.at(DatabaseSettings::PASS).isEmpty())
+        db.setPassword(settings.at(DatabaseSettings::PASS));
+
+    //Q_ASSERT(db.open());
+
+    db.open();
+
+    return db;
 }
-
-#endif

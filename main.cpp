@@ -1,29 +1,27 @@
 #include <QApplication>
+#include <qglobal.h>
 
-#include "indexthread.h"
-
-#include <QProgressBar>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-
-//#include "colorpushbutton.h"
 #include "mainwindow.h"
 #include "colorextractortest.h"
+#include "settingsmodel.h"
 
+/**
+ * @todo path to lowercase
+ * @todo cancel button
+ * @todo taskbar progress
+ * @todo about
+ * @todo error handling in createTables()
+ */
 
 int main(int argc, char** argv)
 {
     QApplication app(argc,argv);
-    /*QString driver("QMYSQL");
-    openDb(DatabaseSettings(driver,"localhost","picture_search","root",""));*/
-    //createTables(driver);
 
     MainWindow w;
     w.show();
 
     return app.exec();
 }
-
 
 #if 0
 /*QProgressBar progress;

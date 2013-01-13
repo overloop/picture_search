@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include <QTime>
 #include <QModelIndex>
+#include <QAbstractItemModel>
 
 #include "indexthread.h"
 #include "searchthread.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -22,9 +24,10 @@ public:
     
 private:
     Ui::MainWindow *ui;
-    IndexThread indexThread;
-    SearchThread searchThread;
-    QTime time;
+    IndexThread m_indexThread;
+    SearchThread m_searchThread;
+    QTime m_time;
+    QAbstractItemModel* m_settingsModel;
 
 private slots:
     void on_selectDirectories_triggered();

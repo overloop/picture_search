@@ -22,7 +22,9 @@ SOURCES += \
     NEUQUANT.C \
     colorextractorsimple.cpp \
     colorextractor.cpp \
-    colorextractorneuquant.cpp
+    colorextractorneuquant.cpp \
+    settingsmodel.cpp \
+    database.cpp
 
 HEADERS += \
     indexthread.h \
@@ -44,7 +46,9 @@ HEADERS += \
     NEUQUANT.H \
     colorextractorsimple.h \
     colorextractor.h \
-    colorextractorneuquant.h
+    colorextractorneuquant.h \
+    settingsmodel.h \
+    database.h
 
 FORMS += \
     mainwindow.ui \

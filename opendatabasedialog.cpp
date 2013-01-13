@@ -1,19 +1,31 @@
 #include "opendatabasedialog.h"
 #include "ui_opendatabasedialog.h"
 
-#include "sqlquery.h"
+#include "databasesettings.h"
+#include <QDataWidgetMapper>
+#include "settingsmodel.h"
 
-/*static*/ int OpenDatabaseDialog::m_driverIndex = 1;
-
-OpenDatabaseDialog::OpenDatabaseDialog(QWidget *parent) :
+OpenDatabaseDialog::OpenDatabaseDialog(QAbstractItemModel *settingsModel, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::OpenDatabaseDialog)
+    m_settingsModel(settingsModel),
+    ui(new Ui::OpenDatabaseDialog),
+    m_widgetMapper(new QDataWidgetMapper(this))
 {
     ui->setupUi(this);
 
-    ui->driver->addItem("Mysql","QMYSQL");
-    ui->driver->addItem("Sqlite","QSQLITE");
-    ui->driver->setCurrentIndex(m_driverIndex);
+    for (int i=0;i<settingsModel->rowCount();i++)
+        ui->driver->addItem(settingsModel->index(i,DatabaseSettings::DRIVER).data().toString());
+
+    m_widgetMapper->setModel(m_settingsModel);
+    //m_widgetMapper->setOrientation(Qt::Vertical);
+    m_widgetMapper->addMapping(ui->host,DatabaseSettings::HOST);
+    m_widgetMapper->addMapping(ui->database,DatabaseSettings::DATABASE);
+    m_widgetMapper->addMapping(ui->user,DatabaseSettings::USER);
+    m_widgetMapper->addMapping(ui->pass,DatabaseSettings::PASS);
+
+    SettingsModel* model = static_cast<SettingsModel*>(m_settingsModel);
+    m_widgetMapper->setCurrentIndex( model->driver() );
+
 }
 
 OpenDatabaseDialog::~OpenDatabaseDialog()
@@ -23,31 +35,22 @@ OpenDatabaseDialog::~OpenDatabaseDialog()
 
 DatabaseSettings OpenDatabaseDialog::settings()
 {
-    int index = ui->driver->currentIndex();
-    QString driver = ui->driver->itemData(index).toString();
-    QString hostName = ui->hostName->text();
-    QString dbName = ui->dbName->text();
-    QString dbUser = ui->dbUser->text();
-    QString dbPass = ui->dbPass->text();
-    return DatabaseSettings(driver,hostName,dbName,dbUser,dbPass);
-}
+    SettingsModel* model = static_cast<SettingsModel*>(m_settingsModel);
+    int row = model->driver();
 
-void OpenDatabaseDialog::setSettings(const DatabaseSettings& settings)
-{
-    QComboBox* driver = ui->driver;
+    DatabaseSettings settings;
+    settings[DatabaseSettings::DRIVER] = m_settingsModel->index(row,DatabaseSettings::DRIVER).data().toString();
+    settings[DatabaseSettings::HOST] = m_settingsModel->index(row,DatabaseSettings::HOST).data().toString();
+    settings[DatabaseSettings::DATABASE] = m_settingsModel->index(row,DatabaseSettings::DATABASE).data().toString();
+    settings[DatabaseSettings::USER] = m_settingsModel->index(row,DatabaseSettings::USER).data().toString();
+    settings[DatabaseSettings::PASS] = m_settingsModel->index(row,DatabaseSettings::PASS).data().toString();
 
-    int n = driver->count();
-    for (int i=0;i<n;i++)
-        if (driver->itemData(i).toString() == settings.driver)
-            driver->setCurrentIndex(i);
-    ui->hostName->setText(settings.hostName);
-    ui->dbName->setText(settings.dbName);
-    ui->dbUser->setText(settings.dbUser);
-    ui->dbPass->setText(settings.dbPass);
+    return settings;
 }
 
 void OpenDatabaseDialog::on_driver_currentIndexChanged(int index)
 {
-    m_driverIndex = index;
-    setSettings(DatabaseSettings::defaults(ui->driver->itemData(index).toString()));
+    m_widgetMapper->setCurrentIndex(index);
+    SettingsModel* model = static_cast<SettingsModel*>(m_settingsModel);
+    model->setDriver(index);
 }
