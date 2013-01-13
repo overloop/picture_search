@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_searchThread,SIGNAL(found()),this,SLOT(found()));
     connect(&m_indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
 
+    ui->openDatabase->setShortcut(QKeySequence::Open);
+    ui->exit->setShortcut(QKeySequence::Quit);
+
     ui->statusbar->addWidget(ui->progress,1);
 
     int half = this->size().width()/2;
@@ -155,4 +158,5 @@ void MainWindow::on_about_triggered()
     about->setWindowModality( Qt::ApplicationModal );
     about->setAttribute(Qt::WA_DeleteOnClose);
     about->show();
+    about->activateWindow();
 }

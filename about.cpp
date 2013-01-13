@@ -12,3 +12,4 @@ About::~About()
 {
     delete ui;
 }
+

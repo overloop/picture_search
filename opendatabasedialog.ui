@@ -80,6 +80,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>driver</tabstop>
+  <tabstop>host</tabstop>
+  <tabstop>database</tabstop>
+  <tabstop>user</tabstop>
+  <tabstop>pass</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
