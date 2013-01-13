@@ -7,8 +7,8 @@
 
 OpenDatabaseDialog::OpenDatabaseDialog(QAbstractItemModel *settingsModel, QWidget *parent) :
     QDialog(parent),
-    m_settingsModel(settingsModel),
     ui(new Ui::OpenDatabaseDialog),
+    m_settingsModel(settingsModel),
     m_widgetMapper(new QDataWidgetMapper(this))
 {
     ui->setupUi(this);
@@ -25,7 +25,6 @@ OpenDatabaseDialog::OpenDatabaseDialog(QAbstractItemModel *settingsModel, QWidge
 
     SettingsModel* model = static_cast<SettingsModel*>(m_settingsModel);
     m_widgetMapper->setCurrentIndex( model->driver() );
-
 }
 
 OpenDatabaseDialog::~OpenDatabaseDialog()

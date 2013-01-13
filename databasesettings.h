@@ -6,11 +6,6 @@
 class DatabaseSettings : public QStringList
 {
 public:
-    DatabaseSettings()
-    {
-        for (int i=0;i<SIZE;i++)
-            append(QString());
-    }
     enum INDEX {
         DRIVER = 0,
         HOST,
@@ -19,7 +14,7 @@ public:
         PASS,
         SIZE
     };
+    DatabaseSettings();
 };
-
 
 #endif // DATABASESETTINGS_H

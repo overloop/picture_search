@@ -1,8 +1,14 @@
-
 #ifndef IMAGEVIEW_H
 #define IMAGEVIEW_H
 
 #include <QAbstractItemView>
+
+/** @todo optimize paintEvent() - paint only visible images
+ *  @todo split class on borrowed and original code (QNotSoAbstractItemView)
+ *  @todo draw file name
+ *  @todo implement show in file manager for unix and maybe mac (http://lynxline.com/show-in-finder-show-in-explorer/)
+ *  @todo get rid of magic numbers 0 - pixmap 1 - path in model
+ */
 
 class ImageView : public QAbstractItemView
 {
@@ -23,6 +29,8 @@ public:
 
     QModelIndex moveCursor(CursorAction cursorAction, Qt::KeyboardModifiers modifiers);
 
+    void contextMenuEvent(QContextMenuEvent *event);
+
 protected:
 
     int rows() const;
@@ -32,9 +40,16 @@ protected:
     int m_columns;
     QSize m_totalSize;
 
+    QAction* m_showInFileManager;
+    QAction* m_openInExternalViewer;
+    QAction* m_copyPathToClipboard;
+
 protected slots:
 
     void updateGeometries();
+    void showInFileManager_triggered();
+    void openInExternalViewer_triggered();
+    void copyPathToClipboard_triggered();
 
 signals:
     

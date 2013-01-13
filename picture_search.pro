@@ -24,7 +24,8 @@ SOURCES += \
     colorextractor.cpp \
     colorextractorneuquant.cpp \
     settingsmodel.cpp \
-    database.cpp
+    database.cpp \
+    about.cpp
 
 HEADERS += \
     indexthread.h \
@@ -48,13 +49,15 @@ HEADERS += \
     colorextractor.h \
     colorextractorneuquant.h \
     settingsmodel.h \
-    database.h
+    database.h \
+    about.h
 
 FORMS += \
     mainwindow.ui \
     colorextractortest.ui \
     directoriesdialog.ui \
-    opendatabasedialog.ui
+    opendatabasedialog.ui \
+    about.ui
 
 
 

@@ -1,18 +1,34 @@
 #include "imageview.h"
 
+#include <QtGlobal>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QScrollBar>
 #include <QDebug>
 #include <QPixmap>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QClipboard>
+#include <QApplication>
+#include <QDir>
+#include <QProcess>
+#include <QDesktopServices>
+#include <QUrl>
 
 ImageView::ImageView(QWidget *parent) :
     QAbstractItemView(parent),
     m_itemSize(150),
-    m_columns(1)
+    m_columns(1),
+    m_showInFileManager(new QAction("Show location",this)),
+    m_openInExternalViewer(new QAction("Open",this)),
+    m_copyPathToClipboard(new QAction("Copy path",this))
 {
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
+
+    connect(m_copyPathToClipboard,SIGNAL(triggered()),this,SLOT(copyPathToClipboard_triggered()));
+    connect(m_showInFileManager,SIGNAL(triggered()),this,SLOT(showInFileManager_triggered()));
+    connect(m_openInExternalViewer,SIGNAL(triggered()),this,SLOT(openInExternalViewer_triggered()));
 }
 
 void ImageView::paintEvent(QPaintEvent *event)
@@ -305,3 +321,41 @@ QModelIndex ImageView::moveCursor(CursorAction cursorAction, Qt::KeyboardModifie
     return current;
 }
 
+void ImageView::contextMenuEvent(QContextMenuEvent * event)
+{
+    QMenu menu;
+#ifdef Q_OS_WIN
+    menu.addAction(m_showInFileManager);
+#endif
+    menu.addAction(m_openInExternalViewer);
+    menu.addAction(m_copyPathToClipboard);
+    menu.exec(event->globalPos());
+}
+
+void ImageView::showInFileManager_triggered()
+{
+#ifdef Q_OS_WIN
+    int source_row = currentIndex().row();
+    QString path = QDir::toNativeSeparators( this->model()->index(source_row,1).data().toString() );
+    //QString explorer = "explorer.exe";
+    QStringList args = QStringList() << QString("/select,") << path;
+    QProcess::startDetached("explorer",args);
+#else
+
+#endif
+}
+
+void ImageView::openInExternalViewer_triggered()
+{
+    int source_row = currentIndex().row();
+    QString path = this->model()->index(source_row,1).data().toString();
+    QDesktopServices::openUrl(QUrl(QString("file:///")+path));
+}
+
+void ImageView::copyPathToClipboard_triggered()
+{
+    int source_row = currentIndex().row();
+    QString path = QDir::toNativeSeparators( this->model()->index(source_row,1).data().toString() );
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText(path);
+}

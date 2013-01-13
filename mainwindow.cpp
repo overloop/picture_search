@@ -1,11 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QResizeEvent>
-#include <QImage>
-#include <QPainter>
+#include <QtGui>
+
 #include <QDebug>
 #include <QSqlError>
 #include <QTimer>
@@ -16,6 +13,7 @@
 #include "opendatabasedialog.h"
 #include "database.h"
 #include "settingsmodel.h"
+#include "about.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -144,6 +142,17 @@ void MainWindow::on_openDatabase_triggered()
 
         ui->searchOptions->setEnabled(true);
         ui->selectDirectories->setEnabled(true);
+
+        on_color_colorSelected(ui->color->color());
     }
 
+}
+
+void MainWindow::on_about_triggered()
+{
+    About* about = new About();
+    about->setWindowFlags( about->windowFlags() | Qt::Tool );
+    about->setWindowModality( Qt::ApplicationModal );
+    about->setAttribute(Qt::WA_DeleteOnClose);
+    about->show();
 }

@@ -47,7 +47,6 @@ int IndexJobAddFiles::make()
             QImage image(fileName);
             ColorExtractorSimple extractor(image);
             QList<QColor> common = extractor.extract();
-            QColor color;
 
             QImage preview = extractor.scaled().scaled(QSize(150,150),Qt::KeepAspectRatio);
 
@@ -62,11 +61,11 @@ int IndexJobAddFiles::make()
             q.addBindValue(id);
             q.addBindValue(name);
             q.addBindValue(previewByteArray);
-
             Q_ASSERT(q.exec());
 
             QVariant file_id = q.lastInsertId();
 
+            QColor color;
             foreach(color,common)
             {
                 int h,s,l;
