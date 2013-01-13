@@ -14,6 +14,7 @@
 #include "database.h"
 #include "settingsmodel.h"
 #include "about.h"
+#include "taskbarprogress/qtaskbarprogress.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
         QMessageBox::critical(this,"Error",model->error());
         return ;
     }
+
+    ui->progress->taskbarProgress()->setParent(this);
 
     QTimer::singleShot(0,this,SLOT(on_openDatabase_triggered()));
 }

@@ -1,6 +1,8 @@
 QT+= \
     sql
 
+include(taskbarprogress/taskbarprogress.pri)
+
 SOURCES += \
     main.cpp \
     indexthread.cpp \

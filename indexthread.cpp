@@ -67,6 +67,7 @@ void IndexThread::run()
                 if (i>0) emit progress(i);
             }
             m_jobs.acquireResult(job);
+            emit progress(0);
         }
 
         if (m_abort)

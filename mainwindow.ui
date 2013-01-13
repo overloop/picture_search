@@ -97,7 +97,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QProgressBar" name="progress">
+     <widget class="QTasksyncedProgressBar" name="progress">
       <property name="maximum">
        <number>1000</number>
       </property>
@@ -183,6 +183,11 @@
    <extends>QWidget</extends>
    <header>imageview.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QTasksyncedProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header>qtasksyncedprogressbar.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
