@@ -121,13 +121,14 @@
     <property name="title">
      <string>Index</string>
     </property>
+    <addaction name="openDatabase"/>
     <addaction name="selectDirectories"/>
    </widget>
    <widget class="QMenu" name="menuDatabase">
     <property name="title">
-     <string>Database</string>
+     <string>&amp;File</string>
     </property>
-    <addaction name="openDatabase"/>
+    <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -152,12 +153,17 @@
   </action>
   <action name="openDatabase">
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open database</string>
    </property>
   </action>
   <action name="about">
    <property name="text">
     <string>About Picture Search</string>
+   </property>
+  </action>
+  <action name="exit">
+   <property name="text">
+    <string>&amp;Exit</string>
    </property>
   </action>
  </widget>
@@ -180,5 +186,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>exit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

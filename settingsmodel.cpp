@@ -15,7 +15,7 @@ SettingsModel::SettingsModel(QObject* parent /*= 0*/) : QAbstractTableModel(pare
 #endif
 
 #ifdef Q_OS_LINUX
-    m_settingsRoot = "/usr/etc";
+    m_settingsRoot = "/usr/local/etc";
     m_sqliteRoot = "/var";
 #endif
 
