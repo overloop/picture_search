@@ -39,6 +39,7 @@ private slots:
     void found();
     void indexStoped();
     void currentImageChanged(QModelIndex current, QModelIndex);
+    void databaseOpened(QString error);
 
 };
 

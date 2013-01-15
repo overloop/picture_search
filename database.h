@@ -8,9 +8,9 @@ class Database
 {
 public:
 
-    static QSqlDatabase open(const DatabaseSettings& settings);
-    static bool tablesExist();
-    static void createTables(const QString& driver);
+    static QSqlDatabase open(const DatabaseSettings& settings, const QString &connectionName);
+    static bool tablesExist(QSqlDatabase db);
+    static void createTables(QSqlDatabase db);
 
 private:
 

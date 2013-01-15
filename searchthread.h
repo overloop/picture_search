@@ -6,6 +6,9 @@
 #include <QPixmap>
 #include <QWaitCondition>
 #include <QPair>
+#include <QSqlDatabase>
+
+#include "databasesettings.h"
 
 class SearchThread : public QThread
 {
@@ -14,6 +17,7 @@ public:
     typedef QPair<QString,QImage> SearchResult;
     explicit SearchThread(QObject *parent = 0);
     ~SearchThread();
+    void openDatabase(const DatabaseSettings& settings);
 
     QList<SearchResult> result();
 
@@ -27,6 +31,8 @@ protected:
     QColor m_color;
     int m_deviation;
     bool m_abort;
+    DatabaseSettings m_settings;
+    QSqlDatabase m_db;
 
 signals:
     void found();

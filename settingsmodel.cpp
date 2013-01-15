@@ -113,6 +113,7 @@ int SettingsModel::columnCount(const QModelIndex &parent) const
 
 Qt::ItemFlags SettingsModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index)
     return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
 }
 

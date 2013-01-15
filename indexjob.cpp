@@ -1,13 +1,45 @@
 #include "indexjob.h"
 
 #include <QDir>
-#include "sqlquery.h"
 #include <QVariant>
 #include <QBuffer>
 #include <QImage>
+#include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
 
 #include "colorextractorsimple.h"
 #include "colorextractorneuquant.h"
+#include "database.h"
+
+//#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text(); else qDebug() << q.numRowsAffected() << " rows affected; size: " << q.size() << q.lastQuery()
+#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text()
+
+
+/* static */
+QSqlDatabase IndexJob::m_database;
+
+int IndexJobOpenDatabase::make()
+{
+    m_database = Database::open(m_settings,"IndexThread");
+
+    if (!m_database.isOpen())
+    {
+        m_error = m_database.lastError().text();
+        m_done = true;
+        return 1000;
+    }
+
+    if (!Database::tablesExist(m_database))
+        Database::createTables(m_database);
+
+    /*QSqlQuery q(m_database);
+    q.prepare("INSERT into file (path) values('test')");
+    q.exec();*/
+
+    m_done = true;
+    return 1000;
+}
 
 int IndexJobScanDirectories::make()
 {
@@ -56,12 +88,14 @@ int IndexJobAddFiles::make()
             preview.save(&buf,"JPEG");
             //extractor.scaled().save(&buf,"JPEG");
 
-            SqlQuery q;
+            //qDebug() << "IndexJobAddFiles::make()";
+
+            QSqlQuery q(m_database);
             q.prepare("INSERT INTO file(directory_id,path,preview) VALUES(?,?,?)");
             q.addBindValue(id);
             q.addBindValue(name);
             q.addBindValue(previewByteArray);
-            Q_ASSERT(q.exec());
+            QUERY_EXEC(q);
 
             QVariant file_id = q.lastInsertId();
 
@@ -76,11 +110,8 @@ int IndexJobAddFiles::make()
                 q.addBindValue(h);
                 q.addBindValue(s);
                 q.addBindValue(l);
-                Q_ASSERT(q.exec());
+                QUERY_EXEC(q);
             }
-
-
-
         }
     }
 
@@ -92,13 +123,14 @@ int IndexJobAddFiles::make()
 
 bool IndexJobAddFiles::hasRecord(const QString path, int directoryId)
 {
-    SqlQuery q;
+    //qDebug() << "IndexJobAddFiles::hasRecord(const QString path, int directoryId)";
+
+    QSqlQuery q(m_database);
     q.prepare("SELECT count(*) FROM file WHERE directory_id=? AND path=?");
     q.addBindValue(directoryId);
     q.addBindValue(path);
-    Q_ASSERT(q.exec());
-    Q_ASSERT(q.next());
-    if (q.value(0).toInt()<1)
+    QUERY_EXEC(q);
+    if (q.next() && q.value(0).toInt()<1)
     {
         return false;
     }
@@ -114,10 +146,10 @@ int IndexJobAddFiles::directoryId(const QString& path)
 
     int id = -1;
 
-    SqlQuery q;
+    QSqlQuery q(m_database);
     q.prepare("SELECT directory_id FROM directory WHERE path=?");
     q.addBindValue(path);
-    Q_ASSERT(q.exec());
+    QUERY_EXEC(q);
     if (q.next())
         id = q.value(0).toInt();
 
@@ -132,7 +164,7 @@ int IndexJobRemoveDirectories::make()
     for (int i=0;i<n;i++)
     {
         QString dir = m_dirs.at(i);
-        SqlQuery q;
+        QSqlQuery q(m_database);
         q.prepare("DELETE FROM color WHERE file_id in "
                   "(SELECT file.file_id "
                   "FROM directory "
@@ -141,7 +173,7 @@ int IndexJobRemoveDirectories::make()
                   "directory.path LIKE ? "
                   "AND file.directory_id = directory.directory_id) ");
         q.addBindValue(dir + QString("/%"));
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
         q.prepare("DELETE FROM color WHERE file_id in "
                   "(SELECT file.file_id "
@@ -151,7 +183,7 @@ int IndexJobRemoveDirectories::make()
                   "directory.path=? "
                   "AND file.directory_id = directory.directory_id) ");
         q.addBindValue(dir);
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
         q.prepare("DELETE FROM file WHERE directory_id in "
                   "(SELECT directory_id "
@@ -159,7 +191,7 @@ int IndexJobRemoveDirectories::make()
                   "WHERE "
                   "directory.path LIKE ?) ");
         q.addBindValue(dir + QString("/%"));
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
         q.prepare("DELETE FROM file WHERE directory_id in "
                   "(SELECT directory_id "
@@ -167,15 +199,15 @@ int IndexJobRemoveDirectories::make()
                   "WHERE "
                   "directory.path=?) ");
         q.addBindValue(dir);
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
         q.prepare("DELETE FROM directory WHERE path LIKE ?");
         q.addBindValue(dir + QString("/%"));
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
         q.prepare("DELETE FROM directory WHERE path=?");
         q.addBindValue(dir);
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
 
     }
     m_done = true;
@@ -228,12 +260,12 @@ void IndexJobAddDirectories::makeOne(QString oneDir, bool subdirs)
 
     if (!hasRecord(oneDir))
     {
-        SqlQuery q;
+        QSqlQuery q(m_database);
         q.prepare("INSERT into directory(path,subdirs,user) VALUES(?,?,?)");
         q.addBindValue(oneDir);
         q.addBindValue(subdirs?1:0);
         q.addBindValue(1);
-        Q_ASSERT(q.exec());
+        QUERY_EXEC(q);
     }
 
     if (subdirs)
@@ -243,12 +275,12 @@ void IndexJobAddDirectories::makeOne(QString oneDir, bool subdirs)
         {
             if ((path!=oneDir) && (!hasRecord(path)))
             {
-                SqlQuery q;
+                QSqlQuery q(m_database);
                 q.prepare("INSERT into directory(path,subdirs,user) VALUES(?,?,?)");
                 q.addBindValue(path);
                 q.addBindValue(false);
                 q.addBindValue(0);
-                Q_ASSERT(q.exec());
+                QUERY_EXEC(q);
             }
         }
     }
@@ -257,12 +289,11 @@ void IndexJobAddDirectories::makeOne(QString oneDir, bool subdirs)
 
 bool IndexJobAddDirectories::hasRecord(const QString& path)
 {
-    SqlQuery q;
+    QSqlQuery q(m_database);
     q.prepare("SELECT count(*) FROM directory WHERE path=?");
     q.addBindValue(path);
-    Q_ASSERT(q.exec());
-    Q_ASSERT(q.next());
-    if (q.value(0).toInt()<1)
+    QUERY_EXEC(q);
+    if (q.next() && q.value(0).toInt()<1)
     {
         return false;
     }

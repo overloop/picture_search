@@ -3,6 +3,9 @@
 
 #include <QStringList>
 #include <QPair>
+#include <QSqlDatabase>
+
+#include "databasesettings.h"
 
 class IndexJob
 {
@@ -11,7 +14,8 @@ public:
         AddDirectories,
         ScanDirectories,
         AddFiles,
-        RemoveDirectories
+        RemoveDirectories,
+        OpenDatabase
     };
 
     IndexJob() : m_done(false), m_index(0) {}
@@ -21,9 +25,23 @@ public:
     virtual int make() = 0;
     virtual QStringList result() {return QStringList();}
 
+    static QSqlDatabase m_database;
+
 protected:
     bool m_done;
     int m_index;
+};
+
+class IndexJobOpenDatabase : public IndexJob
+{
+public:
+    IndexJobOpenDatabase(const DatabaseSettings& settings) : m_settings(settings) {}
+    int type() { return OpenDatabase; }
+    int make();
+    QStringList result() {return QStringList() << m_error;}
+protected:
+    DatabaseSettings m_settings;
+    QString m_error;
 };
 
 class IndexJobScanDirectories : public IndexJob

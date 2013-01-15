@@ -3,20 +3,24 @@
 #include "sqlquery.h"
 #include "databasesettings.h"
 
+#include <QDebug>
+#include <QSqlError>
+
 /*static*/
-bool Database::tablesExist()
+bool Database::tablesExist(QSqlDatabase db)
 {
-    SqlQuery q;
+    SqlQuery q(db);
     q.prepare("SELECT count(*) FROM directory JOIN file JOIN color");
     return q.exec();
 }
 
 /*static*/
-void Database::createTables(const QString& driver)
+void Database::createTables(QSqlDatabase db)
 {
     QStringList queries;
 
-    if (driver == QString("QMYSQL"))
+
+    if (db.driverName() == QString("QMYSQL"))
     {
         queries << "CREATE TABLE color ( "
                    "color_id int(11) NOT NULL AUTO_INCREMENT, "
@@ -40,7 +44,7 @@ void Database::createTables(const QString& driver)
                    "preview blob, "
                    "PRIMARY KEY (file_id) "
                    ") ";
-    } else if (driver == QString("QSQLITE")) {
+    } else if (db.driverName() == QString("QSQLITE")) {
 
         queries << "CREATE TABLE color ( "
                    "color_id integer primary key autoincrement, "
@@ -63,22 +67,23 @@ void Database::createTables(const QString& driver)
                    ") ";
 
     } else {
-        Q_ASSERT( QString("Driver %1 not supported for this application.").arg(driver).isEmpty() );
+        Q_ASSERT( QString("Driver %1 not supported for this application.").arg(db.driverName()).isEmpty() );
     }
 
     while (!queries.isEmpty())
     {
-        SqlQuery q;
+        SqlQuery q(db);
         q.prepare(queries.takeFirst());
-        Q_ASSERT(q.exec());
+        if (!q.exec())
+            qDebug() << q.lastError().text();
     }
 
 }
 
 /*static*/
-QSqlDatabase Database::open(const DatabaseSettings& settings)
+QSqlDatabase Database::open(const DatabaseSettings& settings, const QString& connectionName)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase(settings.at(DatabaseSettings::DRIVER));
+    QSqlDatabase db = QSqlDatabase::addDatabase(settings.at(DatabaseSettings::DRIVER),connectionName);
 
     if (!settings.at(DatabaseSettings::DATABASE).isEmpty())
         db.setDatabaseName(settings.at(DatabaseSettings::DATABASE));

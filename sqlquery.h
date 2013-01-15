@@ -7,7 +7,9 @@
 class SqlQuery : public QSqlQuery
 {
 public:
-    explicit SqlQuery();
+    SqlQuery();
+    SqlQuery(QSqlDatabase db);
+
     ~SqlQuery();
 protected:
     static QMutex mutex;

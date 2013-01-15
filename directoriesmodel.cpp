@@ -1,15 +1,20 @@
 #include "directoriesmodel.h"
 
-#include "sqlquery.h"
+#include <QSqlQuery>
+#include <QDebug>
+#include <QSqlError>
+
+//#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text(); else qDebug() << q.numRowsAffected() << " rows affected; size: " << q.size() << q.lastQuery()
+#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text()
 
 DirectoriesModel::DirectoriesModel(QObject* parent /*= 0*/) :
     QAbstractTableModel(parent),
     m_write(true),
     m_userMode(true)
 {
-   SqlQuery q;
+   QSqlQuery q(QSqlDatabase::database("MainThread"));
    q.prepare("SELECT path,subdirs,user FROM directory");
-   Q_ASSERT(q.exec());
+   QUERY_EXEC(q);
    while (q.next())
    {
        Item item(q.value(0).toString(),q.value(1).toInt()==1);

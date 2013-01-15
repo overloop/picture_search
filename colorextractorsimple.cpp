@@ -77,6 +77,7 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
     {
         int c_max = 0;
         double h_max, s_max, l_max;
+        h_max = s_max = l_max = 0;
         for (int i=0;i<h_n;i++)
             for (int j=0;j<s_n;j++)
                 for (int k=0;k<l_n;k++)

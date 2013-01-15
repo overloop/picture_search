@@ -7,6 +7,7 @@
 #include <QStringList>
 
 #include "indexjobs.h"
+class DatabaseSettings;
 
 class IndexThread : public QThread
 {
@@ -19,6 +20,7 @@ public:
 
     void addDirs(const QList<QPair<QString,bool> >& dirs);
     void removeDirs(const QStringList& dirs);
+    void openDatabase(const DatabaseSettings& settings);
 
 protected:
     virtual void run();
@@ -31,7 +33,7 @@ protected:
     QWaitCondition waitCondition;
     IndexJobs m_jobs;
     //volatile bool m_jobIsRunning;
-    volatile bool m_abort;
+    bool m_abort;
 
     //bool setJobRunning(bool state) { QMutexLocker locker(&mutex); m_jobIsRunning = state; }
 
@@ -39,6 +41,7 @@ signals:
     void progress(int);
     void indexStarted();
     void indexStoped();
+    void databaseOpened(QString error);
     
 public slots:
 

@@ -8,6 +8,11 @@ SqlQuery::SqlQuery()
     mutex.lock();
 }
 
+SqlQuery::SqlQuery(QSqlDatabase db) : QSqlQuery(db)
+{
+    mutex.lock();
+}
+
 SqlQuery::~SqlQuery()
 {
     mutex.unlock();

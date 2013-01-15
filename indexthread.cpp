@@ -33,6 +33,12 @@ void IndexThread::removeDirs(const QStringList& dirs)
     startOrResume();
 }
 
+void IndexThread::openDatabase(const DatabaseSettings& settings)
+{
+    m_jobs.queueOpenDatabase(settings);
+    startOrResume();
+}
+
 void IndexThread::startOrResume()
 {
     if (!isRunning())
@@ -61,13 +67,20 @@ void IndexThread::run()
         {
             //setJobRunning(true);
             IndexJob* job = m_jobs.takeFirst();
+
             while ((!job->isDone()) && (!m_abort))
             {
                 int i = job->make();
                 if (i>0) emit progress(i);
             }
             m_jobs.acquireResult(job);
+            if (job->type() == IndexJob::OpenDatabase)
+            {
+                QString error = m_jobs.error();
+                emit databaseOpened(error);
+            }
             emit progress(0);
+            delete job;
         }
 
         if (m_abort)

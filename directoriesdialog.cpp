@@ -56,22 +56,14 @@ void DirectoriesDialog::on_remove_clicked()
     ui->table->model()->removeRow(list.at(0).row());
 }
 
-void DirectoriesDialog::currentChanged(QModelIndex current,QModelIndex)
+void DirectoriesDialog::currentChanged(QModelIndex,QModelIndex)
 {
-    //qDebug() << ui->table->selectionModel()->selectedRows().size();
-    //qDebug() << ui->table->selectionModel()->selectedRows();
-    //qDebug() << ui->table->selectionModel()->selectedIndexes();
-
     ui->remove->setEnabled(ui->table->selectionModel()->selectedRows().size()>0);
 }
 
 void DirectoriesDialog::selectionChanged(QItemSelection current,QItemSelection)
 {
-    //qDebug() << current;
-    //ui->remove->setEnabled(true);
-
     ui->remove->setEnabled(current.size()>0);
-
 }
 
 QAbstractItemModel* DirectoriesDialog::model() const

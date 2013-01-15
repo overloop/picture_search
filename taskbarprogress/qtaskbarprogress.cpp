@@ -90,7 +90,6 @@ void QTaskbarProgress::setValue(int value)
 void QTaskbarProgress::update()
 {
 #ifdef Q_OS_WIN
-
     if (m_value == m_min)
         QTaskbarList3::instance()->setProgressState(
                     reinterpret_cast<QWidget *>(parent()), TBPF_NOPROGRESS);

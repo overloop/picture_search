@@ -1,10 +1,18 @@
 #include "searchthread.h"
 
-#include "sqlquery.h"
 #include <QVariant>
 #include <QImage>
 #include <QByteArray>
 #include <QBuffer>
+#include <QSqlQuery>
+#include <QDebug>
+#include <QSqlError>
+
+#include "database.h"
+
+//#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text(); else qDebug() << q.numRowsAffected() << " rows affected; size: " << q.size() << q.lastQuery()
+#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text()
+
 
 SearchThread::SearchThread(QObject *parent) :
     QThread(parent),
@@ -51,18 +59,27 @@ void SearchThread::run()
 {
     while (true) {
 
+        mutex.lock();
+        if (!m_settings.isEmpty())
+        {
+            m_db = Database::open(m_settings,"SearchThread");
+            m_settings = DatabaseSettings();
+        }
+        mutex.unlock();
+
         if (m_searchRequested)
         {
             mutex.lock();
             m_searchRequested = false;
             QColor color = m_color;
             int deviation = m_deviation;
+            QSqlDatabase db = m_db;
             mutex.unlock();
 
             int h,s,l;
             color.getHsl(&h,&s,&l);
 
-            SqlQuery q;
+            QSqlQuery q(db);
             q.prepare("SELECT directory.path,file.path,preview FROM file JOIN directory "
                       "JOIN color "
                       "WHERE file.directory_id=directory.directory_id AND "
@@ -73,8 +90,7 @@ void SearchThread::run()
             q.addBindValue(s);
             q.addBindValue(l);
             q.addBindValue(deviation);
-            bool res = q.exec();
-            Q_ASSERT(res);
+            QUERY_EXEC(q);
 
             QList<SearchResult> result;
 
@@ -108,4 +124,10 @@ void SearchThread::run()
             return;
 
     }
+}
+
+void SearchThread::openDatabase(const DatabaseSettings& settings)
+{
+    QMutexLocker locker(&mutex);
+    m_settings = settings;
 }

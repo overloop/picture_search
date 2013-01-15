@@ -1,12 +1,14 @@
 #ifndef INDEXJOBS_H
 #define INDEXJOBS_H
 
+class IndexJob;
+
 #include <QMutex>
 #include <QList>
 #include <QPair>
 #include <QStringList>
 
-class IndexJob;
+#include "databasesettings.h"
 
 class IndexJobs
 {
@@ -18,6 +20,8 @@ public:
 
     void queueAddDirs(const QList<QPair<QString,bool> >& dirs);
     void queueRemoveDirs(const QStringList& dirs);
+    void queueOpenDatabase(const DatabaseSettings& settings);
+    QString error();
 
 protected:
     QMutex mutex;
@@ -26,6 +30,8 @@ protected:
     QStringList m_directoriesToScan;
     QStringList m_filesToAdd;
     QStringList m_directoriesToRemove;
+    DatabaseSettings m_settings;
+    QString m_error;
 
 };
 

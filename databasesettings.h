@@ -15,6 +15,8 @@ public:
         SIZE
     };
     DatabaseSettings();
+
+    bool isEmpty() const; //hmmmmm
 };
 
 #endif // DATABASESETTINGS_H

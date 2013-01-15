@@ -37,8 +37,8 @@ protected:
 
    QList<Item> m_dirsUser;
    QList<Item> m_dirsAll;
-   bool m_userMode;
    bool m_write;
+   bool m_userMode;
 };
 
 #endif //DIRECTORIESMODEL_H

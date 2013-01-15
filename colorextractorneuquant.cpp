@@ -12,6 +12,8 @@ ColorExtractorNeuquant::ColorExtractorNeuquant(const QImage &image, QSize scaled
 /*virtual*/
 QList<QColor> ColorExtractorNeuquant::extract(const ColorExtractrorOptions &options)
 {
+    Q_UNUSED(options)
+
     int sf = 5;
 
     int w = m_scaled.width();

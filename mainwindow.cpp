@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
     connect(&m_searchThread,SIGNAL(found()),this,SLOT(found()));
     connect(&m_indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
+    connect(&m_indexThread,SIGNAL(databaseOpened(QString)),this,SLOT(databaseOpened(QString)));
 
     ui->openDatabase->setShortcut(QKeySequence::Open);
     ui->exit->setShortcut(QKeySequence::Quit);
@@ -109,7 +110,7 @@ void MainWindow::on_deviation_valueChanged(int value)
 
 void MainWindow::indexStoped()
 {
-    ui->statusbar->showMessage(QString("Operation finished in %1s").arg(m_time.elapsed() / 1000));
+    ui->statusbar->showMessage(QString("Operation completed in %1s").arg(m_time.elapsed() / 1000));
 }
 
 void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
@@ -136,18 +137,11 @@ void MainWindow::on_openDatabase_triggered()
     if (dialog.exec() == QDialog::Accepted)
     {
         DatabaseSettings settings = dialog.settings();
-        QSqlDatabase db = Database::open(settings);
-        if (!db.isOpen())
-        {
-            QMessageBox::critical(this,"Error",db.lastError().text());
-            return ;
-        }
 
-        if (!Database::tablesExist())
-            Database::createTables(settings.at(DatabaseSettings::DRIVER));
-
-        ui->searchOptions->setEnabled(true);
-        ui->selectDirectories->setEnabled(true);
+        m_time.start();
+        m_indexThread.openDatabase(settings);
+        m_searchThread.openDatabase(settings);
+        Database::open(settings,"MainThread");
 
         on_color_colorSelected(ui->color->color());
     }
@@ -162,4 +156,17 @@ void MainWindow::on_about_triggered()
     about->setAttribute(Qt::WA_DeleteOnClose);
     about->show();
     about->activateWindow();
+}
+
+void MainWindow::databaseOpened(QString error)
+{
+    if (error.isEmpty())
+    {
+        ui->searchOptions->setEnabled(true);
+        ui->selectDirectories->setEnabled(true);
+    }
+    else
+    {
+        QMessageBox::critical(this,"Error",error);
+    }
 }
