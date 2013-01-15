@@ -21,8 +21,8 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputDir=D:\doc\projects\picture_search\setup
-OutputBaseFilename=picture_search
+OutputDir=setup
+OutputBaseFilename=picture_search_setup
 Compression=lzma
 SolidCompression=yes
 

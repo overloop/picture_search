@@ -1,1 +1,1 @@
-if not exist %APPDATA%\picture_search mkdir %APPDATA%\picture_search
+if not exist "%APPDATA%\picture_search" mkdir "%APPDATA%\picture_search"

@@ -61,7 +61,8 @@ FORMS += \
     opendatabasedialog.ui \
     about.ui
 
-
+RC_FILE = \
+	picture_search.rc
 
 
 
