@@ -6,13 +6,14 @@
 class DatabaseSettings : public QStringList
 {
 public:
-    enum INDEX {
-        DRIVER = 0,
-        HOST,
-        DATABASE,
-        USER,
-        PASS,
-        SIZE
+    enum Index {
+        Driver = 0,
+        Host,
+        Database,
+        User,
+        Pass,
+        PreviewDir,
+        Size
     };
     DatabaseSettings();
 

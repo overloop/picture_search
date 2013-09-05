@@ -14,14 +14,15 @@ OpenDatabaseDialog::OpenDatabaseDialog(QAbstractItemModel *settingsModel, QWidge
     ui->setupUi(this);
 
     for (int i=0;i<settingsModel->rowCount();i++)
-        ui->driver->addItem(settingsModel->index(i,DatabaseSettings::DRIVER).data().toString());
+        ui->driver->addItem(settingsModel->index(i,DatabaseSettings::Driver).data().toString());
 
     m_widgetMapper->setModel(m_settingsModel);
     //m_widgetMapper->setOrientation(Qt::Vertical);
-    m_widgetMapper->addMapping(ui->host,DatabaseSettings::HOST);
-    m_widgetMapper->addMapping(ui->database,DatabaseSettings::DATABASE);
-    m_widgetMapper->addMapping(ui->user,DatabaseSettings::USER);
-    m_widgetMapper->addMapping(ui->pass,DatabaseSettings::PASS);
+    m_widgetMapper->addMapping(ui->host,DatabaseSettings::Host);
+    m_widgetMapper->addMapping(ui->database,DatabaseSettings::Database);
+    m_widgetMapper->addMapping(ui->user,DatabaseSettings::User);
+    m_widgetMapper->addMapping(ui->pass,DatabaseSettings::Pass);
+    m_widgetMapper->addMapping(ui->previewDir,DatabaseSettings::PreviewDir);
 
     SettingsModel* model = static_cast<SettingsModel*>(m_settingsModel);
     m_widgetMapper->setCurrentIndex( model->driver() );
@@ -38,11 +39,12 @@ DatabaseSettings OpenDatabaseDialog::settings()
     int row = model->driver();
 
     DatabaseSettings settings;
-    settings[DatabaseSettings::DRIVER] = m_settingsModel->index(row,DatabaseSettings::DRIVER).data().toString();
-    settings[DatabaseSettings::HOST] = m_settingsModel->index(row,DatabaseSettings::HOST).data().toString();
-    settings[DatabaseSettings::DATABASE] = m_settingsModel->index(row,DatabaseSettings::DATABASE).data().toString();
-    settings[DatabaseSettings::USER] = m_settingsModel->index(row,DatabaseSettings::USER).data().toString();
-    settings[DatabaseSettings::PASS] = m_settingsModel->index(row,DatabaseSettings::PASS).data().toString();
+    settings[DatabaseSettings::Driver] = m_settingsModel->index(row,DatabaseSettings::Driver).data().toString();
+    settings[DatabaseSettings::Host] = m_settingsModel->index(row,DatabaseSettings::Host).data().toString();
+    settings[DatabaseSettings::Database] = m_settingsModel->index(row,DatabaseSettings::Database).data().toString();
+    settings[DatabaseSettings::User] = m_settingsModel->index(row,DatabaseSettings::User).data().toString();
+    settings[DatabaseSettings::Pass] = m_settingsModel->index(row,DatabaseSettings::Pass).data().toString();
+    settings[DatabaseSettings::PreviewDir] = m_settingsModel->index(row,DatabaseSettings::PreviewDir).data().toString();
 
     return settings;
 }

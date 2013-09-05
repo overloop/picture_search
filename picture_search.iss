@@ -2,10 +2,15 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Picture Search"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Doronin Stanislav"
 #define MyAppURL "http://mugiseyebrows.ru"
 #define MyAppExeName "picture_search.exe"
+
+#define MingwBin "C:\mingw\bin"
+#define QtBin "C:\Qt\4.7.4\bin"
+#define QtPlugins "C:\Qt\4.7.4\plugins"
+#define UsrBin "C:\lib\bin"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -22,7 +27,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=setup
-OutputBaseFilename=picture_search_setup
+OutputBaseFilename=setup_picture_search
 Compression=lzma
 SolidCompression=yes
 
@@ -35,26 +40,24 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "release\picture_search.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\plugins\sqldrivers"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\sqldrivers\qsqlmysql4.dll"; DestDir: "{app}\plugins\sqldrivers"; Flags: ignoreversion
 Source: "conf\qt.conf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "create_directories.bat"; DestDir: "{app}"; Flags: ignoreversion deleteafterinstall
-Source: "C:\Qt\4.8.3\bin\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\bin\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\bin\QtSql4.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qgif4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qico4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qjpeg4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qmng4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qsvg4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qtga4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\Qt\4.8.3\plugins\imageformats\qtiff4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
-Source: "C:\lib\bin\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\lib\bin\libmysql.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\mingw\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\mingw\bin\mingwm10.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\mingw\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-                         
+
+Source: "{#QtBin}\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtBin}\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#QtBin}\QtSql4.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "{#QtPlugins}\sqldrivers\qsqlite4.dll"; DestDir: "{app}\plugins\sqldrivers"; Flags: ignoreversion
+Source: "{#QtPlugins}\sqldrivers\qsqlmysql4.dll"; DestDir: "{app}\plugins\sqldrivers"; Flags: ignoreversion
+Source: "{#QtPlugins}\imageformats\*.dll"; Excludes: "*d4.dll"; DestDir: "{app}\plugins\imageformats"; Flags: ignoreversion
+
+Source: "{#MingwBin}\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MingwBin}\mingwm10.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MingwBin}\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+; I'm almost sure i dont need this
+; Source: "{#UsrBin}\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#UsrBin}\libmysql.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -63,7 +66,9 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
+[Dirs]
+Name: "{userappdata}\picture_search";
+
 [Run]
-Filename: "{app}\create_directories.bat"; 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 

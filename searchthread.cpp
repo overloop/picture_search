@@ -10,8 +10,7 @@
 
 #include "database.h"
 
-//#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text(); else qDebug() << q.numRowsAffected() << " rows affected; size: " << q.size() << q.lastQuery()
-#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text()
+#define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text(); qDebug() << q.lastQuery(); } while(0)
 
 
 SearchThread::SearchThread(QObject *parent) :
@@ -85,7 +84,8 @@ void SearchThread::run()
                       "WHERE file.directory_id=directory.directory_id AND "
                       "color.file_id=file.file_id AND "
                       "(abs(h-?)*2+abs(s-?)+abs(l-?))<? "
-                      "GROUP BY file.file_id");
+                      "GROUP BY file.file_id "
+                      "LIMIT 300");
             q.addBindValue(h);
             q.addBindValue(s);
             q.addBindValue(l);
@@ -97,12 +97,13 @@ void SearchThread::run()
             while (q.next() && !m_abort)
             {
                 //result.append(SearchResult(q.va));
-                QImage preview;
+                /*QImage preview;
                 QByteArray previewByteArray = q.value(2).toByteArray();
                 QBuffer buf(&previewByteArray);
                 buf.open(QIODevice::ReadOnly);
-                preview.load(&buf,"JPEG");
+                preview.load(&buf,"JPEG");*/
 
+                QString preview = q.value(2).toString();
                 QString path = q.value(0).toString() + QString("/") + q.value(1).toString();
                 result.append(SearchResult(path,preview));
             }

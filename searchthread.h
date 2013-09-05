@@ -14,7 +14,7 @@ class SearchThread : public QThread
 {
     Q_OBJECT
 public:
-    typedef QPair<QString,QImage> SearchResult;
+    typedef QPair<QString,QString> SearchResult;
     explicit SearchThread(QObject *parent = 0);
     ~SearchThread();
     void openDatabase(const DatabaseSettings& settings);

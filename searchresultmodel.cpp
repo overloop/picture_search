@@ -1,11 +1,13 @@
 #include "searchresultmodel.h"
 
-SearchResultModel::SearchResultModel(QList<QPair<QString, QImage> > &data, QObject* parent /*= 0*/) : QAbstractTableModel(parent)
+#include <QDir>
+
+SearchResultModel::SearchResultModel(const QList<QPair<QString, QString> > &data, const QString previewDir, QObject* parent /*= 0*/) : QAbstractTableModel(parent)
 {
-    QPair<QString,QImage> item;
+    QPair<QString,QString> item;
     foreach(item,data)
     {
-        m_pixmaps.append(QPixmap::fromImage(item.second));
+        m_pixmaps.append(QPixmap(QDir(previewDir).filePath(item.second)));
         m_paths.append(item.first);
     }
 }

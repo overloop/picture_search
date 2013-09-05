@@ -22,6 +22,8 @@ public:
    void setDriver(int driver);
    QString error() const;
 
+   QString previewDir() const;
+
 protected:
 
    QList<DatabaseSettings> m_data;

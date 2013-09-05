@@ -59,7 +59,8 @@ protected:
 class IndexJobAddFiles : public IndexJob
 {
 public:
-    IndexJobAddFiles(const QStringList& files) : m_files(files) {}
+    IndexJobAddFiles(const QStringList& files, const QString& previewDir) :
+        m_files(files), m_previewDir(previewDir) {}
     int type() {return AddFiles;}
     int make();
     bool hasRecord(const QString path, int directoryId);
@@ -67,6 +68,7 @@ public:
 protected:
     QStringList m_files;
     QPair<QString,int> m_dirid;
+    QString m_previewDir;
 };
 
 class IndexJobRemoveDirectories : public IndexJob

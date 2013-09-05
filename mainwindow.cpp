@@ -15,11 +15,10 @@
 #include "settingsmodel.h"
 #include "about.h"
 #include "taskbarprogress/qtaskbarprogress.h"
+#include "version.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    m_settingsModel(new SettingsModel(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
+    m_settingsModel(new SettingsModel(this)),m_about(0),m_dialog(0)
 {
     ui->setupUi(this);
     connect(&m_indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
@@ -47,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->progress->taskbarProgress()->setParent(this);
 
+    setWindowTitle(QString("Picture Search %1 ").arg(PICTURE_SEARCH_VERSION_STR));
+
     QTimer::singleShot(0,this,SLOT(on_openDatabase_triggered()));
 }
 
@@ -58,9 +59,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::found()
 {
+    SettingsModel* settings = static_cast<SettingsModel*>(m_settingsModel);
+    if (!settings)
+        return ;
+
     QAbstractItemModel* previous = ui->previews->model();
     QList<SearchThread::SearchResult> result = m_searchThread.result();
-    SearchResultModel* model = new SearchResultModel(result);
+    SearchResultModel* model = new SearchResultModel(result,settings->previewDir());
     ui->previews->setModel(model);
     connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
     delete previous;
@@ -120,7 +125,7 @@ void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
     if (path.isEmpty())
         return;
 
-    setWindowTitle(QString("Picture Search - ") + QDir::toNativeSeparators(path));
+    setWindowTitle(QString("Picture Search %1 - %2 ").arg(PICTURE_SEARCH_VERSION_STR).arg(QDir::toNativeSeparators(path)));
 
     QImage image(path);
     ui->image->setPixmap(QPixmap::fromImage(image));
@@ -129,14 +134,16 @@ void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
 
 void MainWindow::on_openDatabase_triggered()
 {
-    OpenDatabaseDialog dialog(m_settingsModel);
+    if (!m_dialog) {
+        m_dialog = new OpenDatabaseDialog(m_settingsModel,this);
+    }
 
     ui->searchOptions->setEnabled(false);
     ui->selectDirectories->setEnabled(false);
 
-    if (dialog.exec() == QDialog::Accepted)
+    if (m_dialog->exec() == QDialog::Accepted)
     {
-        DatabaseSettings settings = dialog.settings();
+        DatabaseSettings settings = static_cast<OpenDatabaseDialog*>(m_dialog)->settings();
 
         m_time.start();
         m_indexThread.openDatabase(settings);
@@ -150,12 +157,11 @@ void MainWindow::on_openDatabase_triggered()
 
 void MainWindow::on_about_triggered()
 {
-    About* about = new About();
-    about->setWindowFlags( about->windowFlags() | Qt::Tool );
-    about->setWindowModality( Qt::ApplicationModal );
-    about->setAttribute(Qt::WA_DeleteOnClose);
-    about->show();
-    about->activateWindow();
+    if (!m_about) {
+        m_about = new About(this);
+        m_about->setWindowFlags( m_about->windowFlags() | Qt::Tool );
+    }
+    m_about->show();
 }
 
 void MainWindow::databaseOpened(QString error)

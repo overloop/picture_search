@@ -31,6 +31,7 @@ protected:
     QStringList m_filesToAdd;
     QStringList m_directoriesToRemove;
     DatabaseSettings m_settings;
+    QString m_previewDir;
     QString m_error;
 
 };

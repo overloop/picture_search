@@ -10,7 +10,8 @@
 bool Database::tablesExist(QSqlDatabase db)
 {
     SqlQuery q(db);
-    q.prepare("SELECT count(*) FROM directory JOIN file JOIN color");
+    //q.prepare("SELECT count(*) FROM directory JOIN file JOIN color");
+    q.prepare("select * from directory limit 1");
     return q.exec();
 }
 
@@ -18,7 +19,6 @@ bool Database::tablesExist(QSqlDatabase db)
 void Database::createTables(QSqlDatabase db)
 {
     QStringList queries;
-
 
     if (db.driverName() == QString("QMYSQL"))
     {
@@ -41,7 +41,7 @@ void Database::createTables(QSqlDatabase db)
                    "file_id int(11) NOT NULL AUTO_INCREMENT, "
                    "directory_id int(11) DEFAULT NULL, "
                    "path text, "
-                   "preview blob, "
+                   "preview text, "
                    "PRIMARY KEY (file_id) "
                    ") ";
     } else if (db.driverName() == QString("QSQLITE")) {
@@ -63,7 +63,7 @@ void Database::createTables(QSqlDatabase db)
                    "file_id integer primary key autoincrement, "
                    "directory_id integer, "
                    "path text, "
-                   "preview blob "
+                   "preview text "
                    ") ";
 
     } else {
@@ -83,21 +83,19 @@ void Database::createTables(QSqlDatabase db)
 /*static*/
 QSqlDatabase Database::open(const DatabaseSettings& settings, const QString& connectionName)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase(settings.at(DatabaseSettings::DRIVER),connectionName);
+    QSqlDatabase db = QSqlDatabase::addDatabase(settings.at(DatabaseSettings::Driver),connectionName);
 
-    if (!settings.at(DatabaseSettings::DATABASE).isEmpty())
-        db.setDatabaseName(settings.at(DatabaseSettings::DATABASE));
+    if (!settings.at(DatabaseSettings::Database).isEmpty())
+        db.setDatabaseName(settings.at(DatabaseSettings::Database));
 
-    if (!settings.at(DatabaseSettings::HOST).isEmpty())
-        db.setHostName(settings.at(DatabaseSettings::HOST));
+    if (!settings.at(DatabaseSettings::Host).isEmpty())
+        db.setHostName(settings.at(DatabaseSettings::Host));
 
-    if (!settings.at(DatabaseSettings::USER).isEmpty())
-        db.setUserName(settings.at(DatabaseSettings::USER));
+    if (!settings.at(DatabaseSettings::User).isEmpty())
+        db.setUserName(settings.at(DatabaseSettings::User));
 
-    if (!settings.at(DatabaseSettings::PASS).isEmpty())
-        db.setPassword(settings.at(DatabaseSettings::PASS));
-
-    //Q_ASSERT(db.open());
+    if (!settings.at(DatabaseSettings::Pass).isEmpty())
+        db.setPassword(settings.at(DatabaseSettings::Pass));
 
     db.open();
 

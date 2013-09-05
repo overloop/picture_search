@@ -7,13 +7,6 @@ IndexJob* IndexJobs::takeFirst()
 {
     QMutexLocker locker(&mutex);
 
-    if (!m_settings.isEmpty())
-    {
-        DatabaseSettings settings = m_settings;
-        m_settings = DatabaseSettings();
-        return new IndexJobOpenDatabase(settings);
-    }
-
     if (!m_directoriesToAdd.isEmpty())
     {
         /*QPair<QString, bool> dir = m_directoriesToAdd.takeFirst();
@@ -36,7 +29,7 @@ IndexJob* IndexJobs::takeFirst()
     {
         QStringList files = m_filesToAdd;
         m_filesToAdd.clear();
-        return new IndexJobAddFiles(files);
+        return new IndexJobAddFiles(files,m_previewDir);
     }
 
     if (!m_directoriesToRemove.isEmpty())
@@ -44,6 +37,15 @@ IndexJob* IndexJobs::takeFirst()
         QStringList dirs = m_directoriesToRemove;
         m_directoriesToRemove.clear();
         return new IndexJobRemoveDirectories(dirs);
+    }
+
+    // Открывать базу будем только если всё остальное сделано, чтобы не сломать индексацию
+    if (!m_settings.isEmpty())
+    {
+        m_previewDir = m_settings[DatabaseSettings::PreviewDir];
+        DatabaseSettings settings = m_settings;
+        m_settings = DatabaseSettings();
+        return new IndexJobOpenDatabase(settings);
     }
 
     return 0;

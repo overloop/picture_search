@@ -57,7 +57,6 @@ void IndexThread::run()
 
         if (m_jobs.isEmpty())
         {
-            //setJobRunning(false);
             mutex.lock();
             emit indexStoped();
             waitCondition.wait(&mutex);
@@ -65,7 +64,6 @@ void IndexThread::run()
         }
         else
         {
-            //setJobRunning(true);
             IndexJob* job = m_jobs.takeFirst();
 
             while ((!job->isDone()) && (!m_abort))

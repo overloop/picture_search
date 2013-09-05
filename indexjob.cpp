@@ -7,14 +7,14 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QCryptographicHash>
 
 #include "colorextractorsimple.h"
 #include "colorextractorneuquant.h"
 #include "database.h"
 
 //#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text(); else qDebug() << q.numRowsAffected() << " rows affected; size: " << q.size() << q.lastQuery()
-#define QUERY_EXEC(q) if (!q.exec()) qDebug() << q.lastError().text()
-
+#define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text(); qDebug() << q.lastQuery(); } while(0)
 
 /* static */
 QSqlDatabase IndexJob::m_database;
@@ -61,6 +61,8 @@ int IndexJobScanDirectories::make()
     return (m_index*1000/m_dirs.size());
 }
 
+
+
 int IndexJobAddFiles::make()
 {
     if (m_done)
@@ -76,6 +78,26 @@ int IndexJobAddFiles::make()
         Q_ASSERT(id!=-1);
         if (!hasRecord(name,id))
         {
+            /** @todo разобрать с малформатными картинками */
+            /*
+               Иногда программа падает не осилив картинку, с этим нужно разбираться чтобы починить
+               чтобы она не падала второй раз на том же файле, будем добавлять запись о файле в индекс,
+               а потом уже открывать картинку и апдейтом добавлять имя превью файла.
+               Если программа упадёт, то пользователь сможет перезапустить её, и продолжить индексацию,
+               пропустив злосчастную картинку.
+            */
+
+            QString previewFileName = "blank.jpg";
+
+            QSqlQuery q(m_database);
+            q.prepare("INSERT INTO file(directory_id,path,preview) VALUES(?,?,?)");
+            q.addBindValue(id);
+            q.addBindValue(name);
+            q.addBindValue(previewFileName);
+            QUERY_EXEC(q);
+
+            QVariant fileId = q.lastInsertId();
+
             QImage image(fileName);
             ColorExtractorSimple extractor(image);
             QList<QColor> common = extractor.extract();
@@ -83,21 +105,25 @@ int IndexJobAddFiles::make()
             QImage preview = extractor.scaled().scaled(QSize(150,150),Qt::KeepAspectRatio);
 
             QByteArray previewByteArray;
+
             QBuffer buf(&previewByteArray);
             buf.open(QIODevice::WriteOnly);
             preview.save(&buf,"JPEG");
-            //extractor.scaled().save(&buf,"JPEG");
 
-            //qDebug() << "IndexJobAddFiles::make()";
+            QString md5 = QString(QCryptographicHash::hash(previewByteArray,QCryptographicHash::Md5).toHex());
+            previewFileName = md5 + QString(".jpg");
 
-            QSqlQuery q(m_database);
-            q.prepare("INSERT INTO file(directory_id,path,preview) VALUES(?,?,?)");
-            q.addBindValue(id);
-            q.addBindValue(name);
-            q.addBindValue(previewByteArray);
+            QFile file(QDir(m_previewDir).filePath(previewFileName));
+            file.open(QIODevice::WriteOnly);
+            file.write(previewByteArray);
+            file.close();
+
+            q.prepare("update file set preview=? where file_id=?");
+            q.addBindValue(previewFileName);
+            q.addBindValue(fileId);
             QUERY_EXEC(q);
 
-            QVariant file_id = q.lastInsertId();
+            //qDebug() << "IndexJobAddFiles::make()";
 
             QColor color;
             foreach(color,common)
@@ -106,7 +132,7 @@ int IndexJobAddFiles::make()
                 color.getHsl(&h,&s,&l);
 
                 q.prepare("INSERT INTO color(file_id,h,s,l) VALUES(?,?,?,?)");
-                q.addBindValue(file_id);
+                q.addBindValue(fileId);
                 q.addBindValue(h);
                 q.addBindValue(s);
                 q.addBindValue(l);
@@ -121,6 +147,7 @@ int IndexJobAddFiles::make()
     return (m_index*1000/m_files.size());
 }
 
+/** @todo cache me */
 bool IndexJobAddFiles::hasRecord(const QString path, int directoryId)
 {
     //qDebug() << "IndexJobAddFiles::hasRecord(const QString path, int directoryId)";

@@ -8,7 +8,7 @@
 class SearchResultModel : public QAbstractTableModel
 {
 public:
-   SearchResultModel( QList<QPair<QString, QImage> > &data, QObject* parent = 0);
+   SearchResultModel( const QList<QPair<QString, QString> > &data, const QString previewDir, QObject* parent = 0);
    ~SearchResultModel();
 
    int rowCount(const QModelIndex &parent = QModelIndex()) const;

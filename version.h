@@ -1,0 +1,7 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#define PICTURE_SEARCH_VERSION 1,1,0,0
+#define PICTURE_SEARCH_VERSION_STR "1.1\0"
+
+#endif // VERSION_H

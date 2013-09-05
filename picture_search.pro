@@ -52,7 +52,8 @@ HEADERS += \
     colorextractorneuquant.h \
     settingsmodel.h \
     database.h \
-    about.h
+    about.h \
+    version.h
 
 FORMS += \
     mainwindow.ui \
@@ -63,6 +64,9 @@ FORMS += \
 
 RC_FILE = \
 	picture_search.rc
+
+OTHER_FILES += \
+    picture_search.rc
 
 
 

@@ -28,6 +28,8 @@ private:
     SearchThread m_searchThread;
     QTime m_time;
     QAbstractItemModel* m_settingsModel;
+    QWidget* m_about;
+    QDialog* m_dialog;
 
 private slots:
     void on_selectDirectories_triggered();
