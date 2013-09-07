@@ -5,8 +5,8 @@
 #include "indexjob.h"
 
 IndexThread::IndexThread(QObject *parent) :
-    QThread(parent),
-    m_abort(false)/*,
+    QThread(parent)/*,
+    m_abort(false),
     m_jobIsRunning(false)*/
 {
 
@@ -15,7 +15,7 @@ IndexThread::IndexThread(QObject *parent) :
 IndexThread::~IndexThread()
 {
     mutex.lock();
-    m_abort = true;
+   // m_abort = true;
     waitCondition.wakeOne();
     mutex.unlock();
     wait();
@@ -66,7 +66,7 @@ void IndexThread::run()
         {
             IndexJob* job = m_jobs.takeFirst();
 
-            while ((!job->isDone()) && (!m_abort))
+            while ((!job->isDone()) /*&& (!m_abort)*/)
             {
                 int i = job->make();
                 if (i>0) emit progress(i);
@@ -81,8 +81,8 @@ void IndexThread::run()
             delete job;
         }
 
-        if (m_abort)
-            return;
+        /*if (m_abort)
+            return;*/
 
         /*QStringList dirs;
         QStringList files;

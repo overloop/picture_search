@@ -27,7 +27,9 @@ SOURCES += \
     colorextractorneuquant.cpp \
     settingsmodel.cpp \
     database.cpp \
-    about.cpp
+    about.cpp \
+    indexworker.cpp \
+    databaseworker.cpp
 
 HEADERS += \
     indexthread.h \
@@ -53,7 +55,9 @@ HEADERS += \
     settingsmodel.h \
     database.h \
     about.h \
-    version.h
+    version.h \
+    indexworker.h \
+    databaseworker.h
 
 FORMS += \
     mainwindow.ui \

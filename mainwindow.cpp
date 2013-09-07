@@ -21,10 +21,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_settingsModel(new SettingsModel(this)),m_about(0),m_dialog(0)
 {
     ui->setupUi(this);
-    connect(&m_indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
+    /*connect(&m_indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
     connect(&m_searchThread,SIGNAL(found()),this,SLOT(found()));
     connect(&m_indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
-    connect(&m_indexThread,SIGNAL(databaseOpened(QString)),this,SLOT(databaseOpened(QString)));
+    connect(&m_indexThread,SIGNAL(databaseOpened(QString)),this,SLOT(databaseOpened(QString)));*/
 
     ui->openDatabase->setShortcut(QKeySequence::Open);
     ui->exit->setShortcut(QKeySequence::Quit);
@@ -64,10 +64,10 @@ void MainWindow::found()
         return ;
 
     QAbstractItemModel* previous = ui->previews->model();
-    QList<SearchThread::SearchResult> result = m_searchThread.result();
+    /*QList<SearchThread::SearchResult> result = m_searchThread.result();
     SearchResultModel* model = new SearchResultModel(result,settings->previewDir());
     ui->previews->setModel(model);
-    connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
+    connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));*/
     delete previous;
 }
 
@@ -94,28 +94,33 @@ void MainWindow::on_selectDirectories_triggered()
         else
             DirectoriesModel::diff(beforeAll,after,rescan,toAdd,toRemove);
 
-        if (toAdd.size()>0)
+        /*if (toAdd.size()>0)
             m_indexThread.addDirs(toAdd);
         if (toRemove.size()>0)
-            m_indexThread.removeDirs(toRemove);
+            m_indexThread.removeDirs(toRemove);*/
 
-        m_time.start();
     }
 }
 
 void MainWindow::on_color_colorSelected(QColor color)
 {
-    m_searchThread.search(color,ui->deviation->value());
+    //m_searchThread.search(color,ui->deviation->value());
 }
+
+#include <QTimer>
 
 void MainWindow::on_deviation_valueChanged(int value)
 {
-    m_searchThread.search(ui->color->color(),value);
+    //m_searchThread.search(ui->color->color(),value);
+    qDebug() << value;
+
+
 }
 
 void MainWindow::indexStoped()
 {
-    ui->statusbar->showMessage(QString("Operation completed in %1s").arg(m_time.elapsed() / 1000));
+    //ui->statusbar->showMessage(QString("Operation completed in %1s").arg(m_time.elapsed() / 1000));
+
 }
 
 void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
@@ -145,10 +150,11 @@ void MainWindow::on_openDatabase_triggered()
     {
         DatabaseSettings settings = static_cast<OpenDatabaseDialog*>(m_dialog)->settings();
 
-        m_time.start();
+        /*m_time.start();
         m_indexThread.openDatabase(settings);
-        m_searchThread.openDatabase(settings);
-        Database::open(settings,"MainThread");
+        m_searchThread.openDatabase(settings);*/
+        //Database::open(settings,"MainThread");
+        databaseOpened(QString());
 
         on_color_colorSelected(ui->color->color());
     }
@@ -175,4 +181,8 @@ void MainWindow::databaseOpened(QString error)
     {
         QMessageBox::critical(this,"Error",error);
     }
+}
+
+void MainWindow::on_deviation_sliderReleased() {
+
 }

@@ -24,8 +24,10 @@ public:
     
 private:
     Ui::MainWindow *ui;
-    IndexThread m_indexThread;
-    SearchThread m_searchThread;
+
+    QObject* m_indexWorker;
+    QObject* m_databaseWorker;
+
     QTime m_time;
     QAbstractItemModel* m_settingsModel;
     QWidget* m_about;
@@ -35,6 +37,9 @@ private slots:
     void on_selectDirectories_triggered();
     void on_color_colorSelected(QColor color);
     void on_deviation_valueChanged(int value);
+
+    void on_deviation_sliderReleased();
+
     void on_openDatabase_triggered();
     void on_about_triggered();
 

@@ -33,7 +33,7 @@ protected:
     QWaitCondition waitCondition;
     IndexJobs m_jobs;
     //volatile bool m_jobIsRunning;
-    bool m_abort;
+    //bool m_abort;
 
     //bool setJobRunning(bool state) { QMutexLocker locker(&mutex); m_jobIsRunning = state; }
 
