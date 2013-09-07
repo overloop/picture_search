@@ -13,9 +13,12 @@
  * @todo error handling in createTables()
  */
 
+#include "imagestatistics.h"
+
 int main(int argc, char** argv)
 {
     QApplication app(argc,argv);
+    qRegisterMetaType<ImageStatistics>();
 
     MainWindow w;
     w.show();

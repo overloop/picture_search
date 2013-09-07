@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QBuffer>
 
+#include "databasesettings.h"
 #include "colorextractorsimple.h"
 
 IndexWorker::IndexWorker(QObject *parent) :
@@ -72,12 +73,8 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
     int i = 0;
     int n = files.size();
 
-    QStringList names;
-    QList<int> hs;
-    QList<int> ss;
-    QList<int> ls;
-
     int chunkSize = 100;
+    QList<ImageStatistics> filesChunk;
 
     foreach (file,files) {
 
@@ -101,37 +98,22 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
         previewFile.write(previewByteArray);
         previewFile.close();
 
-        QColor color;
-        foreach(color,common) {
-            int h,s,l;
-            color.getHsl(&h,&s,&l);
-            hs << h;
-            ss << s;
-            ls << l;
-        }
-        names << file;
+        filesChunk.append(ImageStatistics(file,previewFileName,common));
 
-        if (names.size() == chunkSize) {
-            emit filesAnalyzed(names,hs,ss,ls);
-            names.clear();
-            hs.clear();
-            ss.clear();
-            ls.clear();
+        if (filesChunk.size() == chunkSize) {
+            emit filesAnalyzed(filesChunk);
+            filesChunk.clear();
         }
         emit progress(++i*1000/n);
     }
 
-    if (names.size()>0) {
-        emit filesAnalyzed(names,hs,ss,ls);
-        names.clear();
-        hs.clear();
-        ss.clear();
-        ls.clear();
+    if (filesChunk.size()>0) {
+        emit filesAnalyzed(filesChunk);
+        filesChunk.clear();
     }
-
     emit progress(1000);
 }
 
-void IndexWorker::setPreviewDir(const QString& previewDir) {
-    m_previewDir = previewDir;
+void IndexWorker::openDatabase(const QStringList& settings) {
+    m_previewDir = settings.at(DatabaseSettings::PreviewDir);
 }

@@ -29,7 +29,8 @@ SOURCES += \
     database.cpp \
     about.cpp \
     indexworker.cpp \
-    databaseworker.cpp
+    databaseworker.cpp \
+    imagestatistics.cpp
 
 HEADERS += \
     indexthread.h \
@@ -57,7 +58,8 @@ HEADERS += \
     about.h \
     version.h \
     indexworker.h \
-    databaseworker.h
+    databaseworker.h \
+    imagestatistics.h
 
 FORMS += \
     mainwindow.ui \

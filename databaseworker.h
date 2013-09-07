@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "imagestatistics.h"
+
 class DatabaseWorker : public QObject
 {
     Q_OBJECT
@@ -14,14 +16,14 @@ protected:
 
 signals:
     void databaseOpened(bool ok, const QString& error);
-    void error(const QString& error);
     void filesUnindexed(const QStringList& files);
+    void error(const QString& error);
 
 public slots:
     void scanDirectories(const QStringList& toAdd, const QStringList& toRemove);
     void openDatabase(const QStringList& settings);
     void filesScaned(const QStringList& files);
-    void filesAnalyzed(const QStringList& files, const QList<int>& hs, const QList<int>& ss, const QList<int>& ls);
+    void filesAnalyzed(const QList<ImageStatistics>& files);
 };
 
 #endif // DATABASEWORKER_H

@@ -219,7 +219,7 @@ void DatabaseWorker::filesScaned(const QStringList& files) {
         emit filesUnindexed(unindexed);
 }
 
-void DatabaseWorker::filesAnalyzed(const QStringList& files, const QList<int>& hs, const QList<int>& ss, const QList<int>& ls) {
+void DatabaseWorker::filesAnalyzed(const QList<ImageStatistics>& files) {
 
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) {
@@ -228,16 +228,13 @@ void DatabaseWorker::filesAnalyzed(const QStringList& files, const QList<int>& h
     }
     QSqlQuery q(db);
 
-    int n = files.size();
-    int m = ls.size() / files.size();
-
-    for (int i=0;i<n;i++) {
-        QString file = files.at(i);
-        QFileInfo t_file(file);
+    ImageStatistics stat;
+    foreach(stat,files) {
+        QFileInfo file(stat.file);
 
         QVariant directoryId;
-        QString dir = t_file.dir().absolutePath();
-        QString path = t_file.completeBaseName();
+        QString dir = file.dir().absolutePath();
+        QString path = file.completeBaseName();
 
         q.prepare("SELECT directory_id from directory where path=?");
         q.addBindValue(dir);
@@ -256,14 +253,22 @@ void DatabaseWorker::filesAnalyzed(const QStringList& files, const QList<int>& h
         q.prepare("INSERT INTO file(directory_id,path,preview) VALUES(?,?,?)");
         q.addBindValue(directoryId);
         q.addBindValue(path);
-        q.addBindValue();
+        q.addBindValue(stat.preview);
         q.exec();
 
-        for (int j=i*m;j<(i+1)*m;j++) {
-            q.prepare("INSERT INTO color")
+        QVariant fileId = q.lastInsertId();
+
+        int n = stat.colors.size();
+        for (int i=0;i<n;i++) {
+            q.prepare("INSERT INTO color(file_id,h,s,l) VALUES(?,?,?,?)");
+            q.addBindValue(fileId);
+            q.addBindValue(stat.h(i));
+            q.addBindValue(stat.s(i));
+            q.addBindValue(stat.l(i));
+            QUERY_EXEC(q);
         }
 
-    }
 
+    }
 
 }
