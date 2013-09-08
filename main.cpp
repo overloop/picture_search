@@ -14,6 +14,8 @@
 
 #include "imagestatistics.h"
 
+#include <QtWebKit/QWebView>
+
 int main(int argc, char** argv)
 {
     QApplication app(argc,argv);

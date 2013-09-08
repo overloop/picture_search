@@ -5,13 +5,17 @@
 
 #include <QLabel>
 
-class PixmapLabel : public QFrame
+class QMovie;
+
+class PixmapLabel : public QLabel
 {
     Q_OBJECT
 public:
     explicit PixmapLabel(QWidget *parent = 0);
+    ~PixmapLabel();
 
-    void setPixmap(const QPixmap& pixmap);
+    void setImage(const QString &image);
+    //void setPixmap(const QPixmap& m_pixmap);
     void setText(const QString& text) {Q_UNUSED(text);}
 
     void paintEvent(QPaintEvent *);
@@ -21,7 +25,8 @@ public:
 
 protected:
 
-    QPixmap pixmap;
+    QPixmap m_pixmap;
+    QMovie* m_movie;
 
 signals:
     

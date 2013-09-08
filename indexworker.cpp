@@ -112,19 +112,21 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
 
         filesChunk.append(ImageStatistics(-1,file,previewFileName,common));
 
-        if (filesChunk.size() == CHUNK_SIZE) {
-            emit filesAnalyzed(filesChunk,false,m_time);
-            filesChunk.clear();
-        }
         ++m_done;
         if (m_total>0)
             emit progress(qMin(qMax(m_done*1000/m_total,0),1000));
         //qDebug() << m_done << m_total;
     }
 
-    emit filesAnalyzed(filesChunk,true,m_time);
-    filesChunk.clear();
-    emit status("Writing data to database, please wait.");
+    if (m_done == m_total) {
+        emit filesAnalyzed(filesChunk,true,m_time);
+        filesChunk.clear();
+        emit status("Writing data to database, please wait.");
+    } else {
+        emit filesAnalyzed(filesChunk,false,QTime());
+        filesChunk.clear();
+    }
+
 }
 
 void IndexWorker::openDatabase(const QStringList& settings) {

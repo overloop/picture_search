@@ -140,8 +140,9 @@ void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
 
     setWindowTitle(QString("Picture Search %1 - %2 ").arg(PICTURE_SEARCH_VERSION_STR).arg(QDir::toNativeSeparators(path)));
 
-    QImage image(path);
-    ui->image->setPixmap(QPixmap::fromImage(image));
+    //QImage image(path);
+    //ui->image->setPixmap(QPixmap::fromImage(image));
+    ui->image->setImage(path);
 }
 
 
