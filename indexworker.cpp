@@ -29,17 +29,15 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
 
     // scan directories for subdirectories
     QString t_dir;
+    QString subdir;
     QStringList subdirs;
     QStringList dirFilter;
     dirFilter << "*";
-    /*int i = 0;
-    int n = dirs.size();*/
 
     foreach(t_dir,dirs) {
         QDir dir(t_dir);
         subdirs << t_dir;
         QStringList t_subdirs = dir.entryList(dirFilter,QDir::Dirs);
-        QString subdir;
         foreach(subdir,t_subdirs) {
             if (subdir != "." && subdir != "..")
                 subdirs.append( dir.absolutePath() + QDir::separator() + subdir);
@@ -70,20 +68,23 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
         }
     }
 
+    /* поправляем тотал на последний чанк, этот последний чанк будет всегда, даже если нет файлов
+     * чтобы зарепортить окончание операции
+     */
     m_total += CHUNK_SIZE;
-    m_total -= filesChunk.size(); // поправляем тотал на последний чанк
-    if (filesChunk.size()>0) {
-        emit filesScaned(filesChunk);
-        filesChunk.clear();
-    }
-
+    m_total -= filesChunk.size();
+    emit filesScaned(filesChunk);
+    filesChunk.clear();
 }
 
 void IndexWorker::filesUnindexed(const QStringList& files) {
 
     QString file;
 
-    m_total -= (CHUNK_SIZE - files.size()); // поправляем тотал, вычитая из него количество файлов которые уже есть в индексе
+    /* поправляем тотал, вычитая из него количество файлов которые уже есть в индексе,
+     * эти файлы отсеялись между filesScaned(chunk1) и filesUnindexed(chunk2): chunk2.size()<chunk1.size()
+     */
+    m_total -= (CHUNK_SIZE - files.size());
 
     ImageStatisticsList filesChunk;
 
@@ -118,7 +119,7 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
         ++m_done;
         if (m_total>0)
             emit progress(qMin(qMax(m_done*1000/m_total,0),1000));
-        qDebug() << m_done << m_total;
+        //qDebug() << m_done << m_total;
     }
 
     emit filesAnalyzed(filesChunk,true,m_time);

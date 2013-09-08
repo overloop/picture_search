@@ -5,11 +5,6 @@ include(taskbarprogress/taskbarprogress.pri)
 
 SOURCES += \
     main.cpp \
-    indexthread.cpp \
-    indexjob.cpp \
-    indexjobs.cpp \
-    searchthread.cpp \
-    sqlquery.cpp \
     colorpushbutton.cpp \
     mainwindow.cpp \
     colorselectpushbutton.cpp \
@@ -17,7 +12,6 @@ SOURCES += \
     colorextractortest.cpp \
     pixmaplabel.cpp \
     imageview.cpp \
-    directoriesmodel.cpp \
     directoriesdialog.cpp \
     opendatabasedialog.cpp \
     databasesettings.cpp \
@@ -26,18 +20,12 @@ SOURCES += \
     colorextractor.cpp \
     colorextractorneuquant.cpp \
     settingsmodel.cpp \
-    database.cpp \
     about.cpp \
     indexworker.cpp \
     databaseworker.cpp \
     imagestatistics.cpp
 
 HEADERS += \
-    indexthread.h \
-    indexjob.h \
-    indexjobs.h \
-    searchthread.h \
-    sqlquery.h \
     colorpushbutton.h \
     mainwindow.h \
     colorselectpushbutton.h \
@@ -45,7 +33,6 @@ HEADERS += \
     colorextractortest.h \
     pixmaplabel.h \
     imageview.h \
-    directoriesmodel.h \
     directoriesdialog.h \
     opendatabasedialog.h \
     databasesettings.h \
@@ -54,7 +41,6 @@ HEADERS += \
     colorextractor.h \
     colorextractorneuquant.h \
     settingsmodel.h \
-    database.h \
     about.h \
     indexworker.h \
     databaseworker.h \

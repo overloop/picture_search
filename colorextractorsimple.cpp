@@ -37,6 +37,7 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
     s_nd = s_n;
     l_nd = l_n;
 
+    // shame
     h_d = 1.000001 / h_nd;
     s_d = 1.000001 / s_nd;
     l_d = 1.000001 / l_nd;

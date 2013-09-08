@@ -1,7 +1,6 @@
 #include "directoriesdialog.h"
 #include "ui_directoriesdialog.h"
 
-#include "directoriesmodel.h"
 #include <QFileDialog>
 #include <QDebug>
 
@@ -12,8 +11,6 @@ DirectoriesDialog::DirectoriesDialog(const QStringList &dirs, QWidget *parent) :
     ui(new Ui::DirectoriesDialog)
 {
     ui->setupUi(this);
-
-    /*DirectoriesModel* model = new DirectoriesModel(this);*/
 
     int n = dirs.size();
     QStandardItemModel* model = new QStandardItemModel(n,1,this);

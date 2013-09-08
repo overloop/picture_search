@@ -24,10 +24,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_settingsModel(new SettingsModel(this)),m_about(0),m_dialog(0)
 {
     ui->setupUi(this);
-    /*connect(&m_indexThread,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
-    connect(&m_searchThread,SIGNAL(found()),this,SLOT(found()));
-    connect(&m_indexThread,SIGNAL(indexStoped()),this,SLOT(indexStoped()));
-    connect(&m_indexThread,SIGNAL(databaseOpened(QString)),this,SLOT(databaseOpened(QString)));*/
 
     ui->openDatabase->setShortcut(QKeySequence::Open);
     ui->exit->setShortcut(QKeySequence::Quit);
@@ -51,18 +47,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     setWindowTitle(QString("Picture Search %1 ").arg(PICTURE_SEARCH_VERSION_STR));
 
-    /*QStringList dirs;
-    dirs << "one" << "two" << "three";
-    DirectoriesDialog dialog(dirs);
-    dialog.exec();
-    qDebug() << dialog.directoriesToAdd();
-    qDebug() << dialog.directoriesToRemove();*/
-
     IndexWorker* indexWorker = new IndexWorker();
     DatabaseWorker* databaseWorker = new DatabaseWorker();
 
     indexWorker->moveToThread(&indexThread);
     databaseWorker->moveToThread(&databaseThread);
+
+    /** @see connections.jpg for connection diagram */
 
     // open database
     connect(this,SIGNAL(openDatabase(QStringList)),indexWorker,SLOT(openDatabase(QStringList)));
@@ -88,7 +79,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(databaseWorker,SIGNAL(status(QString)),this,SLOT(status(QString)));
     connect(indexWorker,SIGNAL(status(QString)),this,SLOT(status(QString)));
 
-
     // cleanup
     connect(&indexThread,SIGNAL(finished()),indexWorker,SLOT(deleteLater()));
     connect(&databaseThread,SIGNAL(finished()),databaseWorker,SLOT(deleteLater()));
@@ -96,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     indexThread.start();
     databaseThread.start();
 
-    ui->progress->setMaximum(1000);
+    //ui->progress->setMaximum(1000);
 
     QTimer::singleShot(0,this,SLOT(on_openDatabase_triggered()));
 }
@@ -132,40 +122,6 @@ void MainWindow::filesFound(const ImageStatisticsList &files) {
     ui->previews->setModel(model);
     connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
 }
-
-/*
-void MainWindow::on_selectDirectories_triggered()
-{
-    DirectoriesDialog dialog;
-
-    DirectoriesModel* model = static_cast<DirectoriesModel*>(dialog.model());
-
-    QList<DirectoriesModel::Item> beforeUser = model->dirs(true);
-    QList<DirectoriesModel::Item> beforeAll = model->dirs(false);
-
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        bool userMode = model->mode();
-
-        QList<DirectoriesModel::Item> after = model->dirs(userMode);
-        QList<DirectoriesModel::Item> toAdd;
-        QList<QString> toRemove;
-        bool rescan = dialog.rescan();
-
-        if (userMode)
-            DirectoriesModel::diff(beforeUser,after,rescan,toAdd,toRemove);
-        else
-            DirectoriesModel::diff(beforeAll,after,rescan,toAdd,toRemove);
-
-        if (toAdd.size()>0)
-            m_indexThread.addDirs(toAdd);
-        if (toRemove.size()>0)
-            m_indexThread.removeDirs(toRemove);
-
-    }
-}
-*/
-
 
 void MainWindow::on_color_colorSelected(QColor color) {
     emit findFiles(color,ui->deviation->value());

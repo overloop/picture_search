@@ -20,9 +20,6 @@ public:
     QSize minimumSizeHint();
 
 protected:
-    /*QLabel* label;
-
-    void resizeLabel(QSize totalSize);*/
 
     QPixmap pixmap;
 

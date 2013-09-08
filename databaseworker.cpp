@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QTime>
 
-#define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text(); qDebug() << q.lastQuery(); } while(0)
+#define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text() << q.lastQuery(); /*qDebug() << q.lastQuery();*/ } while(0)
 
 DatabaseWorker::DatabaseWorker(QObject *parent) :
     QObject(parent), m_total(0), m_done(0)
@@ -45,8 +45,8 @@ void DatabaseWorker::openDatabase(const QStringList& settings) {
 
     QString query;
     QStringList queries;
-    queries << "select * from file limit 1" << "select * from directory limit 1"
-            << "select * from color limit 1";
+    queries << "SELECT * FROM file LIMIT 1" << "SELECT * FROM directory LIMIT 1"
+            << "SELECT * FROM color LIMIT 1";
 
     QSqlQuery q(db);
     foreach(query,queries) {
@@ -175,7 +175,6 @@ void DatabaseWorker::createTables()
         queries << "CREATE TABLE directory ( "
                    "directory_id int(11) NOT NULL AUTO_INCREMENT, "
                    "path text, "
-                   "subdirs int(11) DEFAULT NULL, "
                    "user int(11) DEFAULT NULL, "
                    "PRIMARY KEY (directory_id) "
                    ") ";
@@ -198,7 +197,6 @@ void DatabaseWorker::createTables()
         queries << "CREATE TABLE directory ( "
                    "directory_id integer primary key autoincrement, "
                    "path text, "
-                   "subdirs integer, "
                    "user integer "
                    ") ";
         queries << "CREATE TABLE file ( "
@@ -218,7 +216,7 @@ void DatabaseWorker::createTables()
     {
         q.prepare(queries.takeFirst());
         if (!q.exec()) {
-            emit error(q.lastError().text());
+            emit error(QString("Can't create tables in database: ") + q.lastError().text());
         }
     }
 
@@ -236,7 +234,10 @@ void DatabaseWorker::filesScaned(const QStringList& files) {
     QString file;
     foreach(file,files) {
         QFileInfo t_file(file);
-        q.prepare("SELECT count(*) FROM file JOIN directory WHERE directory.directory_id=file.directory_id AND directory.path=? AND file.path=?");
+        q.prepare("SELECT count(*) FROM file JOIN directory "
+                  "WHERE directory.directory_id=file.directory_id "
+                  "AND directory.path=? "
+                  "AND file.path=? ");
         q.addBindValue(t_file.dir().absolutePath());
         q.addBindValue(t_file.fileName());
         QUERY_EXEC(q);
@@ -269,7 +270,7 @@ void DatabaseWorker::filesAnalyzed(const ImageStatisticsList &files, bool lastCh
         QString dir = file.dir().absolutePath();
         QString path = file.fileName();
 
-        q.prepare("SELECT directory_id from directory where path=?");
+        q.prepare("SELECT directory_id FROM directory WHERE path=?");
         q.addBindValue(dir);
         QUERY_EXEC(q);
 
@@ -315,13 +316,13 @@ void DatabaseWorker::findFiles(const QColor& c, int deviation) {
     }
     QSqlQuery q(db);
 
-    q.prepare("SELECT file.file_id,directory.path,file.path,preview FROM file JOIN directory "
-              "JOIN color "
-              "WHERE file.directory_id=directory.directory_id AND "
-              "color.file_id=file.file_id AND "
-              "(abs(h-?)*2+abs(s-?)+abs(l-?))<? "
+    q.prepare("SELECT file.file_id,directory.path,file.path,preview "
+              "FROM file JOIN directory JOIN color "
+              "WHERE file.directory_id=directory.directory_id "
+              "AND color.file_id=file.file_id "
+              "AND (abs(h-?)*2+abs(s-?)+abs(l-?))<? "
               "GROUP BY file.file_id "
-              "LIMIT 300");
+              "LIMIT 300 ");
     q.addBindValue(c.hue());
     q.addBindValue(c.saturation());
     q.addBindValue(c.lightness());

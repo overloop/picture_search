@@ -9,7 +9,7 @@
 class SearchResultModel : public QAbstractTableModel
 {
 public:
-   SearchResultModel(const QList<ImageStatistics>& files, QObject* parent = 0);
+   SearchResultModel(const ImageStatisticsList& files, QObject* parent = 0);
    ~SearchResultModel();
 
    int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -17,12 +17,6 @@ public:
    Qt::ItemFlags flags(const QModelIndex &index) const;
 
    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-/*
-   bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-   bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
-   bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
-*/
 
 protected:
 

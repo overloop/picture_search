@@ -1,7 +1,7 @@
 IDI_ICON1	ICON	DISCARDABLE	"picture_search.ico"
 
 #include "windows.h"
-#include "version.h"
+#include "picture_search.h"
 
 #define VER_PRODUCTVERSION          PICTURE_SEARCH_VERSION
 #define VER_FILEVERSION             PICTURE_SEARCH_VERSION
