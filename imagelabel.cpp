@@ -1,4 +1,4 @@
-#include "pixmaplabel.h"
+#include "imagelabel.h"
 
 #include <QResizeEvent>
 #include <QDebug>
@@ -8,19 +8,20 @@
 #include <QImageReader>
 #include <QMovie>
 
-PixmapLabel::PixmapLabel(QWidget *parent) :
+ImageLabel::ImageLabel(QWidget *parent) :
     QLabel(parent), m_movie(0)
 {
     //setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     setAlignment(Qt::AlignCenter);
 }
 
-PixmapLabel::~PixmapLabel() {
-
-    delete m_movie;
+ImageLabel::~ImageLabel() {
+    if (m_movie)
+        m_movie->deleteLater();
+    m_movie = 0;
 }
 
-void PixmapLabel::paintEvent(QPaintEvent * event)
+void ImageLabel::paintEvent(QPaintEvent * event)
 {
     QPainter p(this);
 
@@ -42,26 +43,19 @@ void PixmapLabel::paintEvent(QPaintEvent * event)
     drawFrame(&p);
 }
 
-QSize PixmapLabel::sizeHint()
-{
+QSize ImageLabel::sizeHint() {
     if (!m_pixmap.isNull())
-    {
-        QSize pixmapSize = m_pixmap.size();
-        return pixmapSize;
-    }
-    if (m_movie) {
+        return  m_pixmap.size();
+    if (m_movie)
         return m_movie->currentPixmap().size();
-    }
     return QSize();
-
 }
 
-QSize PixmapLabel::minimumSizeHint()
-{
+QSize ImageLabel::minimumSizeHint() {
     return QSize(10,10);
 }
 
-void PixmapLabel::setImage(const QString& image) {
+void ImageLabel::setImage(const QString& image) {
 
     QImageReader reader(image);
     if (reader.supportsAnimation() && reader.imageCount()>1) {

@@ -7,16 +7,14 @@
 
 class QMovie;
 
-class PixmapLabel : public QLabel
+class ImageLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit PixmapLabel(QWidget *parent = 0);
-    ~PixmapLabel();
+    explicit ImageLabel(QWidget *parent = 0);
+    ~ImageLabel();
 
     void setImage(const QString &image);
-    //void setPixmap(const QPixmap& m_pixmap);
-    void setText(const QString& text) {Q_UNUSED(text);}
 
     void paintEvent(QPaintEvent *);
 

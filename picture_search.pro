@@ -10,7 +10,6 @@ SOURCES += \
     colorselectpushbutton.cpp \
     searchresultmodel.cpp \
     colorextractortest.cpp \
-    pixmaplabel.cpp \
     imageview.cpp \
     directoriesdialog.cpp \
     opendatabasedialog.cpp \
@@ -23,7 +22,8 @@ SOURCES += \
     about.cpp \
     indexworker.cpp \
     databaseworker.cpp \
-    imagestatistics.cpp
+    imagestatistics.cpp \
+    imagelabel.cpp
 
 HEADERS += \
     colorpushbutton.h \
@@ -31,7 +31,6 @@ HEADERS += \
     colorselectpushbutton.h \
     searchresultmodel.h \
     colorextractortest.h \
-    pixmaplabel.h \
     imageview.h \
     directoriesdialog.h \
     opendatabasedialog.h \
@@ -45,7 +44,8 @@ HEADERS += \
     indexworker.h \
     databaseworker.h \
     imagestatistics.h \
-    picture_search.h
+    picture_search.h \
+    imagelabel.h
 
 FORMS += \
     mainwindow.ui \

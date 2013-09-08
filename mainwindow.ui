@@ -28,7 +28,7 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="PixmapLabel" name="image">
+      <widget class="ImageLabel" name="image">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -174,11 +174,6 @@
    <header>colorselectpushbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>PixmapLabel</class>
-   <extends>QLabel</extends>
-   <header>pixmaplabel.h</header>
-  </customwidget>
-  <customwidget>
    <class>ImageView</class>
    <extends>QWidget</extends>
    <header>imageview.h</header>
@@ -188,6 +183,11 @@
    <class>QTasksyncedProgressBar</class>
    <extends>QProgressBar</extends>
    <header>qtasksyncedprogressbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImageLabel</class>
+   <extends>QLabel</extends>
+   <header>imagelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
