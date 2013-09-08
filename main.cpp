@@ -6,10 +6,9 @@
 #include "settingsmodel.h"
 
 /**
- * @todo path to lowercase
- * @todo cancel button
- * @todo taskbar progress
- * @todo about
+ * @todo path case and separator char correctness
+ * @todo abort button
+ * @todo rewrite about, 'cause it's shit
  * @todo error handling in createTables()
  */
 
@@ -18,7 +17,7 @@
 int main(int argc, char** argv)
 {
     QApplication app(argc,argv);
-    qRegisterMetaType<ImageStatistics>();
+    qRegisterMetaType<ImageStatisticsList>();
 
     MainWindow w;
     w.show();

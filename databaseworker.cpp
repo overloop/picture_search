@@ -12,7 +12,7 @@
 #define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text(); qDebug() << q.lastQuery(); } while(0)
 
 DatabaseWorker::DatabaseWorker(QObject *parent) :
-    QObject(parent)
+    QObject(parent), m_total(0), m_done(0)
 {
 
 }
@@ -40,6 +40,8 @@ void DatabaseWorker::openDatabase(const QStringList& settings) {
         return;
     }
 
+    m_previewDir = settings.at(DatabaseSettings::PreviewDir);
+
     QString query;
     QStringList queries;
     queries << "select * from file limit 1" << "select * from directory limit 1"
@@ -56,6 +58,24 @@ void DatabaseWorker::openDatabase(const QStringList& settings) {
 
 }
 
+void DatabaseWorker::selectDirectories() {
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isOpen()) {
+        emit error("Database is not opened");
+        return ;
+    }
+    QSqlQuery q(db);
+
+    q.prepare("SELECT path FROM directory WHERE user=1");
+    q.exec();
+
+    QStringList dirs;
+    while (q.next())
+        dirs << q.value(0).toString();
+
+    emit directoriesSelected(dirs);
+}
+
 void DatabaseWorker::scanDirectories(const QStringList& toAdd, const QStringList& toRemove) {
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) {
@@ -63,6 +83,8 @@ void DatabaseWorker::scanDirectories(const QStringList& toAdd, const QStringList
         return ;
     }
     QSqlQuery q(db);
+    m_done = 0;
+    m_total = 0;
 
     QString dir;
     foreach (dir,toRemove) {
@@ -112,10 +134,18 @@ void DatabaseWorker::scanDirectories(const QStringList& toAdd, const QStringList
     }
 
     foreach(dir,toAdd) {
-        q.prepare("INSERT INTO directory(path,user) VALUES(?,?)");
+        q.prepare("SELECT count(*) FROM directory WHERE path=?");
         q.addBindValue(dir);
-        q.addBindValue(1);
         QUERY_EXEC(q);
+        if (q.next() && q.value(0).toInt()>0) {
+            q.prepare("UPDATE directory SET user=1 WHERE path=?");
+            q.addBindValue(dir);
+            QUERY_EXEC(q);
+        } else {
+            q.prepare("INSERT INTO directory(path,user) VALUES(?,1)");
+            q.addBindValue(dir);
+            QUERY_EXEC(q);
+        }
     }
 
 
@@ -207,11 +237,13 @@ void DatabaseWorker::filesScaned(const QStringList& files) {
         QFileInfo t_file(file);
         q.prepare("SELECT count(*) FROM file JOIN directory WHERE directory.directory_id=file.directory_id AND directory.path=? AND file.path=?");
         q.addBindValue(t_file.dir().absolutePath());
-        q.addBindValue(t_file.completeBaseName());
+        q.addBindValue(t_file.fileName());
         QUERY_EXEC(q);
         if (q.next() && q.value(0).toInt()<1)
         {
             unindexed << file;
+        } else {
+            --m_total;
         }
     }
 
@@ -219,7 +251,7 @@ void DatabaseWorker::filesScaned(const QStringList& files) {
         emit filesUnindexed(unindexed);
 }
 
-void DatabaseWorker::filesAnalyzed(const QList<ImageStatistics>& files) {
+void DatabaseWorker::filesAnalyzed(const ImageStatisticsList &files) {
 
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) {
@@ -234,7 +266,7 @@ void DatabaseWorker::filesAnalyzed(const QList<ImageStatistics>& files) {
 
         QVariant directoryId;
         QString dir = file.dir().absolutePath();
-        QString path = file.completeBaseName();
+        QString path = file.fileName();
 
         q.prepare("SELECT directory_id from directory where path=?");
         q.addBindValue(dir);
@@ -262,13 +294,50 @@ void DatabaseWorker::filesAnalyzed(const QList<ImageStatistics>& files) {
         for (int i=0;i<n;i++) {
             q.prepare("INSERT INTO color(file_id,h,s,l) VALUES(?,?,?,?)");
             q.addBindValue(fileId);
-            q.addBindValue(stat.h(i));
-            q.addBindValue(stat.s(i));
-            q.addBindValue(stat.l(i));
+            q.addBindValue(stat.colors.at(i).hue());
+            q.addBindValue(stat.colors.at(i).saturation());
+            q.addBindValue(stat.colors.at(i).lightness());
             QUERY_EXEC(q);
         }
-
-
     }
+    m_done += files.size();
+    if (m_total>0)
+        emit progress( qMax(qMin(m_done*1000/m_total,0),1000) );
+    if (m_done == m_total)
+        emit complete();
+}
 
+void DatabaseWorker::findFiles(const QColor& c, int deviation) {
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isOpen()) {
+        emit error("Database is not opened");
+        return ;
+    }
+    QSqlQuery q(db);
+
+    q.prepare("SELECT file.file_id,directory.path,file.path,preview FROM file JOIN directory "
+              "JOIN color "
+              "WHERE file.directory_id=directory.directory_id AND "
+              "color.file_id=file.file_id AND "
+              "(abs(h-?)*2+abs(s-?)+abs(l-?))<? "
+              "GROUP BY file.file_id "
+              "LIMIT 300");
+    q.addBindValue(c.hue());
+    q.addBindValue(c.saturation());
+    q.addBindValue(c.lightness());
+    q.addBindValue(deviation);
+    QUERY_EXEC(q);
+
+    ImageStatisticsList result;
+    while (q.next()) {
+        int id = q.value(0).toInt();
+        QString path = q.value(1).toString() + "/" + q.value(2).toString();
+        QString preview = m_previewDir + QDir::separator() + q.value(3).toString();
+        result.append(ImageStatistics(id,path,preview));
+    }
+    emit filesFound(result);
+}
+
+void DatabaseWorker::reportTotal(int total) {
+    m_total += total;
 }

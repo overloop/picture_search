@@ -2,6 +2,7 @@
 #define INDEXWORKER_H
 
 #include <QObject>
+#include <QTime>
 
 #include "imagestatistics.h"
 
@@ -13,13 +14,16 @@ public:
 
 protected:
     QString m_previewDir;
+    QTime m_time;
 
 signals:
 
     void progress(int value);
 
     void filesScaned(const QStringList& files);
-    void filesAnalyzed(const QList<ImageStatistics>& files);
+    void filesAnalyzed(const ImageStatisticsList& files);
+
+    void reportTotal(int total);
 
 public slots:
     

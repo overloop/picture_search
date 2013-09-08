@@ -9,17 +9,18 @@ class ImageStatistics
 {
 public:
     ImageStatistics();
-    ImageStatistics(const QString& file,const QString& preview, const QList<QColor>& colors);
+    ImageStatistics(int id, const QString& file,const QString& preview, const QList<QColor>& colors = QList<QColor>());
 
-    int h(int index) const;
-    int s(int index) const;
-    int l(int index) const;
-
+    int id;
     QString file;
     QString preview;
     QList<QColor> colors;
 };
 
-Q_DECLARE_METATYPE(ImageStatistics);
+class ImageStatisticsList : public QList<ImageStatistics> {
+
+};
+
+Q_DECLARE_METATYPE(ImageStatisticsList);
 
 #endif // IMAGESTATISTICS_H

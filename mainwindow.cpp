@@ -9,13 +9,16 @@
 
 #include "searchresultmodel.h"
 #include "directoriesdialog.h"
-#include "directoriesmodel.h"
+
 #include "opendatabasedialog.h"
-#include "database.h"
+
 #include "settingsmodel.h"
 #include "about.h"
 #include "taskbarprogress/qtaskbarprogress.h"
 #include "version.h"
+
+#include "databaseworker.h"
+#include "indexworker.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
     m_settingsModel(new SettingsModel(this)),m_about(0),m_dialog(0)
@@ -48,29 +51,86 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     setWindowTitle(QString("Picture Search %1 ").arg(PICTURE_SEARCH_VERSION_STR));
 
+    /*QStringList dirs;
+    dirs << "one" << "two" << "three";
+    DirectoriesDialog dialog(dirs);
+    dialog.exec();
+    qDebug() << dialog.directoriesToAdd();
+    qDebug() << dialog.directoriesToRemove();*/
+
+    IndexWorker* indexWorker = new IndexWorker();
+    DatabaseWorker* databaseWorker = new DatabaseWorker();
+
+    indexWorker->moveToThread(&indexThread);
+    databaseWorker->moveToThread(&databaseThread);
+
+    // open database
+    connect(this,SIGNAL(openDatabase(QStringList)),indexWorker,SLOT(openDatabase(QStringList)));
+    connect(this,SIGNAL(openDatabase(QStringList)),databaseWorker,SLOT(openDatabase(QStringList)));
+    connect(databaseWorker,SIGNAL(databaseOpened(bool,QString)),this,SLOT(databaseOpened(bool,QString)));
+
+    // build index
+    connect(ui->selectDirectories,SIGNAL(triggered()),databaseWorker,SLOT(selectDirectories()));
+    connect(databaseWorker,SIGNAL(directoriesSelected(QStringList)),this,SLOT(directoriesSelected(QStringList)));
+    connect(this,SIGNAL(scanDirectories(QStringList,QStringList)),databaseWorker,SLOT(scanDirectories(QStringList,QStringList)));
+    connect(this,SIGNAL(scanDirectories(QStringList,QStringList)),indexWorker,SLOT(scanDirectories(QStringList,QStringList)));
+    connect(indexWorker,SIGNAL(filesScaned(QStringList)),databaseWorker,SLOT(filesScaned(QStringList)));
+    connect(databaseWorker,SIGNAL(filesUnindexed(QStringList)),indexWorker,SLOT(filesUnindexed(QStringList)));
+    connect(indexWorker,SIGNAL(filesAnalyzed(ImageStatisticsList)),databaseWorker,SLOT(filesAnalyzed(ImageStatisticsList)));
+
+    // find in index
+    connect(this,SIGNAL(findFiles(QColor,int)),databaseWorker,SLOT(findFiles(QColor,int)));
+    connect(databaseWorker,SIGNAL(filesFound(ImageStatisticsList)),this,SLOT(filesFound(ImageStatisticsList)));
+
+    // reporting
+    connect(databaseWorker,SIGNAL(error(QString)),this,SLOT(error(QString)));
+    connect(indexWorker,SIGNAL(reportTotal(int)),databaseWorker,SLOT(reportTotal(int)));
+    connect(databaseWorker,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
+
+    // cleanup
+    connect(&indexThread,SIGNAL(finished()),indexWorker,SLOT(deleteLater()));
+    connect(&databaseThread,SIGNAL(finished()),databaseWorker,SLOT(deleteLater()));
+
+    indexThread.start();
+    databaseThread.start();
+
+    ui->progress->setMaximum(1000);
+
     QTimer::singleShot(0,this,SLOT(on_openDatabase_triggered()));
 }
 
 MainWindow::~MainWindow()
 {
+    if (ui->previews->model())
+        ui->previews->model()->deleteLater();
+    if (ui->previews->selectionModel())
+        ui->previews->selectionModel()->deleteLater();
+
+    indexThread.quit();
+    databaseThread.quit();
+    indexThread.wait();
+    databaseThread.wait();
+
     delete ui;
 }
 
-
-void MainWindow::found()
-{
-    SettingsModel* settings = static_cast<SettingsModel*>(m_settingsModel);
-    if (!settings)
-        return ;
-
-    QAbstractItemModel* previous = ui->previews->model();
-    /*QList<SearchThread::SearchResult> result = m_searchThread.result();
-    SearchResultModel* model = new SearchResultModel(result,settings->previewDir());
-    ui->previews->setModel(model);
-    connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));*/
-    delete previous;
+void MainWindow::directoriesSelected(const QStringList& dirs) {
+    DirectoriesDialog dialog(dirs);
+    if (dialog.exec() == QDialog::Accepted)
+        emit scanDirectories(dialog.directoriesToAdd(),dialog.directoriesToRemove());
 }
 
+void MainWindow::filesFound(const ImageStatisticsList &files) {
+    SearchResultModel* model = new SearchResultModel(files);
+    if (ui->previews->model())
+        ui->previews->model()->deleteLater();
+    if (ui->previews->selectionModel())
+        ui->previews->selectionModel()->deleteLater();
+    ui->previews->setModel(model);
+    connect(ui->previews->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(currentImageChanged(QModelIndex,QModelIndex)));
+}
+
+/*
 void MainWindow::on_selectDirectories_triggered()
 {
     DirectoriesDialog dialog;
@@ -94,33 +154,22 @@ void MainWindow::on_selectDirectories_triggered()
         else
             DirectoriesModel::diff(beforeAll,after,rescan,toAdd,toRemove);
 
-        /*if (toAdd.size()>0)
+        if (toAdd.size()>0)
             m_indexThread.addDirs(toAdd);
         if (toRemove.size()>0)
-            m_indexThread.removeDirs(toRemove);*/
+            m_indexThread.removeDirs(toRemove);
 
     }
 }
+*/
 
-void MainWindow::on_color_colorSelected(QColor color)
-{
-    //m_searchThread.search(color,ui->deviation->value());
+
+void MainWindow::on_color_colorSelected(QColor color) {
+    emit findFiles(color,ui->deviation->value());
 }
 
-#include <QTimer>
-
-void MainWindow::on_deviation_valueChanged(int value)
-{
-    //m_searchThread.search(ui->color->color(),value);
-    qDebug() << value;
-
-
-}
-
-void MainWindow::indexStoped()
-{
-    //ui->statusbar->showMessage(QString("Operation completed in %1s").arg(m_time.elapsed() / 1000));
-
+void MainWindow::on_deviation_sliderReleased() {
+    emit findFiles(ui->color->color(),ui->deviation->value());
 }
 
 void MainWindow::currentImageChanged(QModelIndex current,QModelIndex)
@@ -148,17 +197,9 @@ void MainWindow::on_openDatabase_triggered()
 
     if (m_dialog->exec() == QDialog::Accepted)
     {
-        DatabaseSettings settings = static_cast<OpenDatabaseDialog*>(m_dialog)->settings();
-
-        /*m_time.start();
-        m_indexThread.openDatabase(settings);
-        m_searchThread.openDatabase(settings);*/
-        //Database::open(settings,"MainThread");
-        databaseOpened(QString());
-
-        on_color_colorSelected(ui->color->color());
+        QStringList settings = static_cast<OpenDatabaseDialog*>(m_dialog)->settings();
+        emit openDatabase(settings);
     }
-
 }
 
 void MainWindow::on_about_triggered()
@@ -170,9 +211,9 @@ void MainWindow::on_about_triggered()
     m_about->show();
 }
 
-void MainWindow::databaseOpened(QString error)
+void MainWindow::databaseOpened(bool ok, const QString &error)
 {
-    if (error.isEmpty())
+    if (ok)
     {
         ui->searchOptions->setEnabled(true);
         ui->selectDirectories->setEnabled(true);
@@ -183,6 +224,6 @@ void MainWindow::databaseOpened(QString error)
     }
 }
 
-void MainWindow::on_deviation_sliderReleased() {
-
+void MainWindow::error(const QString& text) {
+    QMessageBox::critical(this,"Error",text);
 }

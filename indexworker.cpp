@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QCryptographicHash>
 #include <QBuffer>
+#include <QDebug>
 
 #include "databasesettings.h"
 #include "colorextractorsimple.h"
@@ -41,20 +42,30 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
             if (subdir != "." && subdir != "..")
                 subdirs.append( dir.absolutePath() + QDir::separator() + subdir);
         }
-        //emit progress(++i*1000/n);
     }
-    //emit progress(1000);
 
     // scan directories for files
     int chunkSize = 100;
     QStringList filesChunk;
+
+    int total = 0;
     foreach(t_dir,subdirs) {
         QDir dir(t_dir);
         QStringList t_files = dir.entryList(imgFilter,QDir::Files);
-        while (t_files.size()>0) {
-            filesChunk.append(t_files.takeFirst());
+        total += t_files.size();
+    }
+
+    emit reportTotal(total);
+
+    foreach(t_dir,subdirs) {
+        QDir dir(t_dir);
+        QStringList t_files = dir.entryList(imgFilter,QDir::Files);
+        QString file;
+        foreach(file,t_files) {
+            filesChunk.append(dir.filePath(file));
             if (filesChunk.size()==chunkSize) {
                 emit filesScaned(filesChunk);
+                //qDebug() << QString("Progress: %1").arg(done*1000/total);
                 filesChunk.clear();
             }
         }
@@ -74,7 +85,7 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
     int n = files.size();
 
     int chunkSize = 100;
-    QList<ImageStatistics> filesChunk;
+    ImageStatisticsList filesChunk;
 
     foreach (file,files) {
 
@@ -98,20 +109,18 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
         previewFile.write(previewByteArray);
         previewFile.close();
 
-        filesChunk.append(ImageStatistics(file,previewFileName,common));
+        filesChunk.append(ImageStatistics(-1,file,previewFileName,common));
 
         if (filesChunk.size() == chunkSize) {
             emit filesAnalyzed(filesChunk);
             filesChunk.clear();
         }
-        emit progress(++i*1000/n);
     }
 
     if (filesChunk.size()>0) {
         emit filesAnalyzed(filesChunk);
         filesChunk.clear();
     }
-    emit progress(1000);
 }
 
 void IndexWorker::openDatabase(const QStringList& settings) {

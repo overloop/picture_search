@@ -4,11 +4,12 @@
 #include <QAbstractTableModel>
 
 #include <QPixmap>
+#include "imagestatistics.h"
 
 class SearchResultModel : public QAbstractTableModel
 {
 public:
-   SearchResultModel( const QList<QPair<QString, QString> > &data, const QString previewDir, QObject* parent = 0);
+   SearchResultModel(const QList<ImageStatistics>& files, QObject* parent = 0);
    ~SearchResultModel();
 
    int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -25,8 +26,9 @@ public:
 
 protected:
 
-   QList<QPixmap> m_pixmaps;
+   QList<QPixmap> m_preview;
    QList<QString> m_paths;
+   QList<int> m_ids;
 
 };
 

@@ -6,9 +6,9 @@
 #include <QModelIndex>
 #include <QAbstractItemModel>
 
-#include "indexthread.h"
-#include "searchthread.h"
+#include "imagestatistics.h"
 
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -25,28 +25,37 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    QObject* m_indexWorker;
-    QObject* m_databaseWorker;
+protected:
+    /*QObject* m_indexWorker;
+    QObject* m_databaseWorker;*/
 
     QTime m_time;
     QAbstractItemModel* m_settingsModel;
     QWidget* m_about;
     QDialog* m_dialog;
 
+    QThread indexThread;
+    QThread databaseThread;
+
+signals:
+    void scanDirectories(const QStringList& toAdd, const QStringList &toRemove);
+    void findFiles(const QColor& c, int deviation);
+    void openDatabase(const QStringList& settings);
+
 private slots:
-    void on_selectDirectories_triggered();
+    //void on_selectDirectories_triggered();
+
     void on_color_colorSelected(QColor color);
-    void on_deviation_valueChanged(int value);
-
     void on_deviation_sliderReleased();
-
     void on_openDatabase_triggered();
     void on_about_triggered();
 
-    void found();
-    void indexStoped();
     void currentImageChanged(QModelIndex current, QModelIndex);
-    void databaseOpened(QString error);
+    void databaseOpened(bool ok,const QString& error);
+
+    void directoriesSelected(const QStringList& dirs);
+    void filesFound(const ImageStatisticsList& files);
+    void error(const QString& text);
 
 };
 

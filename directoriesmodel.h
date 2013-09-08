@@ -8,7 +8,7 @@ class DirectoriesModel : public QAbstractTableModel
     Q_OBJECT
 public:
 
-    typedef QPair<QString,bool> Item;
+   typedef QPair<QString,bool> Item;
 
    DirectoriesModel(QObject* parent = 0);
    ~DirectoriesModel();

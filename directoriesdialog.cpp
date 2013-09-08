@@ -5,15 +5,26 @@
 #include <QFileDialog>
 #include <QDebug>
 
-DirectoriesDialog::DirectoriesDialog(QWidget *parent) :
+#include <QStandardItemModel>
+
+DirectoriesDialog::DirectoriesDialog(const QStringList &dirs, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DirectoriesDialog)
 {
     ui->setupUi(this);
 
-    DirectoriesModel* model = new DirectoriesModel(this);
-    ui->table->setModel(model);
+    /*DirectoriesModel* model = new DirectoriesModel(this);*/
 
+
+    int n = dirs.size();
+    QStandardItemModel* model = new QStandardItemModel(n,1,this);
+    for (int i=0;i<n;i++) {
+        model->setData(model->index(i,0),dirs.at(i));
+        m_dirsBefore.insert(dirs.at(i));
+    }
+    model->setHeaderData(0,Qt::Horizontal,QString("path"));
+
+    ui->table->setModel(model);
 
     ui->remove->setEnabled(false);
 
@@ -44,8 +55,7 @@ void DirectoriesDialog::on_add_clicked()
     QDir dir(path);
 
     model->insertRows(model->rowCount(),1);
-    model->setData(model->index(row,1),dir.absolutePath());
-    model->setData(model->index(row,0),Qt::Checked,Qt::CheckStateRole);
+    model->setData(model->index(row,0),dir.absolutePath());
 }
 
 void DirectoriesDialog::on_remove_clicked()
@@ -66,18 +76,45 @@ void DirectoriesDialog::selectionChanged(QItemSelection current,QItemSelection)
     ui->remove->setEnabled(current.size()>0);
 }
 
-QAbstractItemModel* DirectoriesDialog::model() const
-{
-    return ui->table->model();
+QStringList DirectoriesDialog::directoriesToAdd() const {
+
+    QStringList dirs;
+    QString dir;
+    foreach(dir,m_dirsAfter) {
+        if (m_dirsBefore.contains(dir)) {
+            if (ui->rescan->isChecked())
+                dirs << dir;
+        } else {
+            dirs << dir;
+        }
+    }
+    return dirs;
 }
 
-bool DirectoriesDialog::rescan() const
-{
-    return ui->rescan->isChecked();
+QStringList DirectoriesDialog::directoriesToRemove() const {
+    QStringList dirs;
+    QString dir;
+    foreach(dir,m_dirsBefore) {
+        if (!m_dirsAfter.contains(dir))
+            dirs << dir;
+    }
+    return dirs;
 }
 
+
+void DirectoriesDialog::accept() {
+
+    QAbstractItemModel* model = ui->table->model();
+    int n = model->rowCount();
+    for (int i=0;i<n;i++)
+        m_dirsAfter.insert(model->data(model->index(i,0)).toString());
+
+    QDialog::accept();
+}
+
+/*
 void DirectoriesDialog::on_userMode_clicked(bool userMode)
 {
     DirectoriesModel* model = static_cast<DirectoriesModel*>(ui->table->model());
     model->setMode(userMode);
-}
+}*/

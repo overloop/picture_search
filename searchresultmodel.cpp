@@ -2,13 +2,14 @@
 
 #include <QDir>
 
-SearchResultModel::SearchResultModel(const QList<QPair<QString, QString> > &data, const QString previewDir, QObject* parent /*= 0*/) : QAbstractTableModel(parent)
+SearchResultModel::SearchResultModel(const QList<ImageStatistics> &files, QObject* parent /*= 0*/) : QAbstractTableModel(parent)
 {
-    QPair<QString,QString> item;
-    foreach(item,data)
+    ImageStatistics stat;
+    foreach(stat,files)
     {
-        m_pixmaps.append(QPixmap(QDir(previewDir).filePath(item.second)));
-        m_paths.append(item.first);
+        m_ids << stat.id;
+        m_paths << stat.file;
+        m_preview << QPixmap(stat.preview);
     }
 }
 
@@ -21,14 +22,14 @@ int SearchResultModel::rowCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
 		return 0;
-    return m_pixmaps.size();
+    return m_preview.size();
 }
 
 int SearchResultModel::columnCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
 		return 0;
-    return 2;
+    return 3;
 }
 
 Qt::ItemFlags SearchResultModel::flags(const QModelIndex &index) const
@@ -48,13 +49,15 @@ QVariant SearchResultModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DecorationRole)
     {
-        if (c==0 && r<m_pixmaps.size())
-            return m_pixmaps.at(r);
+        if (c==0)
+            return m_preview.value(r);
     }
-    if (role == Qt::DisplayRole)
+    if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
-        if (c==1 && r<m_paths.size())
-            return m_paths.at(r);
+        if (c==1)
+            return m_paths.value(r);
+        if (c==2)
+            return m_ids.value(r);
     }
 
 	return QVariant();
