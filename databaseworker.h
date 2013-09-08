@@ -24,8 +24,7 @@ signals:
     void directoriesSelected(const QStringList& dirs);
     void filesFound(const ImageStatisticsList& files);
 
-    void complete();
-    void progress(int);
+    void status(const QString& text);
 
 public slots:
     void scanDirectories(const QStringList& toAdd, const QStringList& toRemove);
@@ -34,9 +33,8 @@ public slots:
     void findFiles(const QColor& c, int deviation);
 
     void filesScaned(const QStringList& files);
-    void filesAnalyzed(const ImageStatisticsList& files);
+    void filesAnalyzed(const ImageStatisticsList& files, bool lastChunk, const QTime& time);
 
-    void reportTotal(int total);
 
 };
 

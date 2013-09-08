@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Picture Search"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.2"
 #define MyAppPublisher "Doronin Stanislav"
 #define MyAppURL "http://mugiseyebrows.ru"
 #define MyAppExeName "picture_search.exe"

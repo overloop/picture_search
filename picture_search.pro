@@ -56,10 +56,10 @@ HEADERS += \
     settingsmodel.h \
     database.h \
     about.h \
-    version.h \
     indexworker.h \
     databaseworker.h \
-    imagestatistics.h
+    imagestatistics.h \
+    picture_search.h
 
 FORMS += \
     mainwindow.ui \

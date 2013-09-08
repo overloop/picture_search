@@ -15,7 +15,6 @@ DirectoriesDialog::DirectoriesDialog(const QStringList &dirs, QWidget *parent) :
 
     /*DirectoriesModel* model = new DirectoriesModel(this);*/
 
-
     int n = dirs.size();
     QStandardItemModel* model = new QStandardItemModel(n,1,this);
     for (int i=0;i<n;i++) {
@@ -44,18 +43,22 @@ DirectoriesDialog::~DirectoriesDialog()
 
 void DirectoriesDialog::on_add_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this);
+    QAbstractItemModel* model = ui->table->model();
+    int rows = model->rowCount();
+
+    QString path;
+
+    if (rows>0)
+        path = model->data(model->index(rows-1,0)).toString();
+
+    path = QFileDialog::getExistingDirectory(this,QString(),path);
     if (path.isEmpty())
         return;
-
-    QAbstractItemModel* model = ui->table->model();
-
-    int row = model->rowCount();
 
     QDir dir(path);
 
     model->insertRows(model->rowCount(),1);
-    model->setData(model->index(row,0),dir.absolutePath());
+    model->setData(model->index(rows,0),dir.absolutePath());
 }
 
 void DirectoriesDialog::on_remove_clicked()

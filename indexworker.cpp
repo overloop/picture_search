@@ -11,7 +11,7 @@
 #include "colorextractorsimple.h"
 
 IndexWorker::IndexWorker(QObject *parent) :
-    QObject(parent)
+    QObject(parent), m_total(0)
 {
 
 }
@@ -19,6 +19,8 @@ IndexWorker::IndexWorker(QObject *parent) :
 void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &toRemove) {
 
     Q_UNUSED(toRemove)
+
+    m_time.start();
 
     QStringList imgFilter;
     foreach (QByteArray format, QImageReader::supportedImageFormats())
@@ -45,17 +47,15 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
     }
 
     // scan directories for files
-    int chunkSize = 100;
     QStringList filesChunk;
 
-    int total = 0;
+    m_total = 0;
+    m_done = 0;
     foreach(t_dir,subdirs) {
         QDir dir(t_dir);
         QStringList t_files = dir.entryList(imgFilter,QDir::Files);
-        total += t_files.size();
+        m_total += t_files.size();
     }
-
-    emit reportTotal(total);
 
     foreach(t_dir,subdirs) {
         QDir dir(t_dir);
@@ -63,14 +63,15 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
         QString file;
         foreach(file,t_files) {
             filesChunk.append(dir.filePath(file));
-            if (filesChunk.size()==chunkSize) {
+            if (filesChunk.size()==CHUNK_SIZE) {
                 emit filesScaned(filesChunk);
-                //qDebug() << QString("Progress: %1").arg(done*1000/total);
                 filesChunk.clear();
             }
         }
     }
 
+    m_total += CHUNK_SIZE;
+    m_total -= filesChunk.size(); // поправляем тотал на последний чанк
     if (filesChunk.size()>0) {
         emit filesScaned(filesChunk);
         filesChunk.clear();
@@ -81,10 +82,9 @@ void IndexWorker::scanDirectories(const QStringList& dirs, const QStringList &to
 void IndexWorker::filesUnindexed(const QStringList& files) {
 
     QString file;
-    int i = 0;
-    int n = files.size();
 
-    int chunkSize = 100;
+    m_total -= (CHUNK_SIZE - files.size()); // поправляем тотал, вычитая из него количество файлов которые уже есть в индексе
+
     ImageStatisticsList filesChunk;
 
     foreach (file,files) {
@@ -111,16 +111,19 @@ void IndexWorker::filesUnindexed(const QStringList& files) {
 
         filesChunk.append(ImageStatistics(-1,file,previewFileName,common));
 
-        if (filesChunk.size() == chunkSize) {
-            emit filesAnalyzed(filesChunk);
+        if (filesChunk.size() == CHUNK_SIZE) {
+            emit filesAnalyzed(filesChunk,false,m_time);
             filesChunk.clear();
         }
+        ++m_done;
+        if (m_total>0)
+            emit progress(qMin(qMax(m_done*1000/m_total,0),1000));
+        qDebug() << m_done << m_total;
     }
 
-    if (filesChunk.size()>0) {
-        emit filesAnalyzed(filesChunk);
-        filesChunk.clear();
-    }
+    emit filesAnalyzed(filesChunk,true,m_time);
+    filesChunk.clear();
+    emit status("Writing data to database, please wait.");
 }
 
 void IndexWorker::openDatabase(const QStringList& settings) {

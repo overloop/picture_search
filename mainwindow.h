@@ -42,6 +42,7 @@ signals:
     void findFiles(const QColor& c, int deviation);
     void openDatabase(const QStringList& settings);
 
+
 private slots:
     //void on_selectDirectories_triggered();
 
@@ -56,6 +57,7 @@ private slots:
     void directoriesSelected(const QStringList& dirs);
     void filesFound(const ImageStatisticsList& files);
     void error(const QString& text);
+    void status(const QString& text);
 
 };
 

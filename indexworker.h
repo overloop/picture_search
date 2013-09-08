@@ -15,15 +15,18 @@ public:
 protected:
     QString m_previewDir;
     QTime m_time;
+    int m_total;
+    int m_done;
+
+    static const int CHUNK_SIZE = 100;
 
 signals:
 
     void progress(int value);
+    void status(const QString& text);
 
     void filesScaned(const QStringList& files);
-    void filesAnalyzed(const ImageStatisticsList& files);
-
-    void reportTotal(int total);
+    void filesAnalyzed(const ImageStatisticsList& files, bool lastChunk, const QTime& time);
 
 public slots:
     

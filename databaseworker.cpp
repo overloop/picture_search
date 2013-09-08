@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QVariant>
 #include <QDebug>
+#include <QTime>
 
 #define QUERY_EXEC(q) do{ if (!q.exec()) qDebug() << q.lastError().text(); qDebug() << q.lastQuery(); } while(0)
 
@@ -247,11 +248,11 @@ void DatabaseWorker::filesScaned(const QStringList& files) {
         }
     }
 
-    if (unindexed.size()>0)
-        emit filesUnindexed(unindexed);
+    //if (unindexed.size()>0)
+    emit filesUnindexed(unindexed);
 }
 
-void DatabaseWorker::filesAnalyzed(const ImageStatisticsList &files) {
+void DatabaseWorker::filesAnalyzed(const ImageStatisticsList &files, bool lastChunk, const QTime &time) {
 
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) {
@@ -300,11 +301,10 @@ void DatabaseWorker::filesAnalyzed(const ImageStatisticsList &files) {
             QUERY_EXEC(q);
         }
     }
-    m_done += files.size();
-    if (m_total>0)
-        emit progress( qMax(qMin(m_done*1000/m_total,0),1000) );
-    if (m_done == m_total)
-        emit complete();
+
+    if (lastChunk)
+        emit status( QString("Index updated in %1s").arg(QString::number((double)time.elapsed()/1000.0,'f',2)) );
+
 }
 
 void DatabaseWorker::findFiles(const QColor& c, int deviation) {
@@ -336,8 +336,4 @@ void DatabaseWorker::findFiles(const QColor& c, int deviation) {
         result.append(ImageStatistics(id,path,preview));
     }
     emit filesFound(result);
-}
-
-void DatabaseWorker::reportTotal(int total) {
-    m_total += total;
 }

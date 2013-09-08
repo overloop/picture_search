@@ -15,7 +15,7 @@
 #include "settingsmodel.h"
 #include "about.h"
 #include "taskbarprogress/qtaskbarprogress.h"
-#include "version.h"
+#include "picture_search.h"
 
 #include "databaseworker.h"
 #include "indexworker.h"
@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this,SIGNAL(scanDirectories(QStringList,QStringList)),indexWorker,SLOT(scanDirectories(QStringList,QStringList)));
     connect(indexWorker,SIGNAL(filesScaned(QStringList)),databaseWorker,SLOT(filesScaned(QStringList)));
     connect(databaseWorker,SIGNAL(filesUnindexed(QStringList)),indexWorker,SLOT(filesUnindexed(QStringList)));
-    connect(indexWorker,SIGNAL(filesAnalyzed(ImageStatisticsList)),databaseWorker,SLOT(filesAnalyzed(ImageStatisticsList)));
+    connect(indexWorker,SIGNAL(filesAnalyzed(ImageStatisticsList,bool,QTime)),databaseWorker,SLOT(filesAnalyzed(ImageStatisticsList,bool,QTime)));
 
     // find in index
     connect(this,SIGNAL(findFiles(QColor,int)),databaseWorker,SLOT(findFiles(QColor,int)));
@@ -84,8 +84,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // reporting
     connect(databaseWorker,SIGNAL(error(QString)),this,SLOT(error(QString)));
-    connect(indexWorker,SIGNAL(reportTotal(int)),databaseWorker,SLOT(reportTotal(int)));
-    connect(databaseWorker,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
+    connect(indexWorker,SIGNAL(progress(int)),ui->progress,SLOT(setValue(int)));
+    connect(databaseWorker,SIGNAL(status(QString)),this,SLOT(status(QString)));
+    connect(indexWorker,SIGNAL(status(QString)),this,SLOT(status(QString)));
+
 
     // cleanup
     connect(&indexThread,SIGNAL(finished()),indexWorker,SLOT(deleteLater()));
@@ -118,6 +120,7 @@ void MainWindow::directoriesSelected(const QStringList& dirs) {
     DirectoriesDialog dialog(dirs);
     if (dialog.exec() == QDialog::Accepted)
         emit scanDirectories(dialog.directoriesToAdd(),dialog.directoriesToRemove());
+    ui->progress->reset();
 }
 
 void MainWindow::filesFound(const ImageStatisticsList &files) {
@@ -226,4 +229,8 @@ void MainWindow::databaseOpened(bool ok, const QString &error)
 
 void MainWindow::error(const QString& text) {
     QMessageBox::critical(this,"Error",text);
+}
+
+void MainWindow::status(const QString& text) {
+    ui->statusbar->showMessage(text);
 }

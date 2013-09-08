@@ -34,16 +34,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="userMode">
-       <property name="text">
-        <string>key directories</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
