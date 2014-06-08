@@ -23,7 +23,7 @@
 #include <stdio.h>
 
 
-#define netsize		16			/* number of colours used */
+#define netsize		10			/* number of colours used */
 
 
 /* For 256 colours, fixed arrays need 8kb, plus space for the image

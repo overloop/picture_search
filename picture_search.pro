@@ -3,6 +3,8 @@ QT+= \
 
 include(taskbarprogress/taskbarprogress.pri)
 
+INCLUDEPATH += forms
+
 SOURCES += \
     main.cpp \
     colorpushbutton.cpp \
@@ -23,7 +25,11 @@ SOURCES += \
     indexworker.cpp \
     databaseworker.cpp \
     imagestatistics.cpp \
-    imagelabel.cpp
+    imagelabel.cpp \
+    colorsmodel.cpp \
+    forms/imagedialog.cpp \
+    forms/colorsview.cpp \
+    colorswidget.cpp
 
 HEADERS += \
     colorpushbutton.h \
@@ -45,14 +51,19 @@ HEADERS += \
     databaseworker.h \
     imagestatistics.h \
     picture_search.h \
-    imagelabel.h
+    imagelabel.h \
+    colorsmodel.h \
+    forms/imagedialog.h \
+    forms/colorsview.h \
+    colorswidget.h
 
 FORMS += \
     mainwindow.ui \
     colorextractortest.ui \
     directoriesdialog.ui \
     opendatabasedialog.ui \
-    about.ui
+    about.ui \
+    forms/imagedialog.ui
 
 RC_FILE = \
 	picture_search.rc

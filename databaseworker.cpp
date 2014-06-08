@@ -316,7 +316,7 @@ void DatabaseWorker::findFiles(const QColor& c, int deviation) {
     }
     QSqlQuery q(db);
 
-    q.prepare("SELECT file.file_id,directory.path,file.path,preview "
+    /*q.prepare("SELECT file.file_id,directory.path,file.path,preview "
               "FROM file JOIN directory JOIN color "
               "WHERE file.directory_id=directory.directory_id "
               "AND color.file_id=file.file_id "
@@ -327,14 +327,59 @@ void DatabaseWorker::findFiles(const QColor& c, int deviation) {
     q.addBindValue(c.saturation());
     q.addBindValue(c.lightness());
     q.addBindValue(deviation);
+    QUERY_EXEC(q);*/
+
+    QHash<int,QList<QColor> > colors;
+    QHash<int,QString> paths;
+    QHash<int,QString> previews;
+
+    q.prepare("SELECT DISTINCT file_id from color where (abs(h-?)*2+abs(s-?)+abs(l-?))<? LIMIT 300");
+    q.addBindValue(c.hue());
+    q.addBindValue(c.saturation());
+    q.addBindValue(c.lightness());
+    q.addBindValue(deviation);
     QUERY_EXEC(q);
 
+    QStringList fileIds;
+    while (q.next()) {
+        int fileId = q.value(0).toInt();
+        fileIds << QString::number(fileId);
+        colors.insert(fileId, QList<QColor>());
+    }
+
+    q.prepare("SELECT file.file_id,directory.path,file.path,preview,h,s,l "
+              "FROM file JOIN directory JOIN color "
+              "WHERE file.directory_id=directory.directory_id "
+              "AND color.file_id=file.file_id AND file.file_id in (" + fileIds.join(",") + ") ORDER BY file.file_id");
+    QUERY_EXEC(q);
+
+    while (q.next()) {
+        int id = q.value(0).toInt();
+        QString path = q.value(1).toString() + "/" + q.value(2).toString();
+        QString preview = m_previewDir + QDir::separator() + q.value(3).toString();
+        int h = q.value(4).toInt();
+        int s = q.value(5).toInt();
+        int l = q.value(6).toInt();
+        QColor color = QColor::fromHsl(h,s,l);
+
+        colors[id].append(color);
+        paths[id] = path;
+        previews[id] = preview;
+    }
+
     ImageStatisticsList result;
+    QList<int> ids = paths.keys();
+    int id;
+    foreach(id,ids) {
+        result.append(ImageStatistics(id,paths[id],previews[id],colors[id]));
+    }
+
+    /*ImageStatisticsList result;
     while (q.next()) {
         int id = q.value(0).toInt();
         QString path = q.value(1).toString() + "/" + q.value(2).toString();
         QString preview = m_previewDir + QDir::separator() + q.value(3).toString();
         result.append(ImageStatistics(id,path,preview));
-    }
+    }*/
     emit filesFound(result);
 }

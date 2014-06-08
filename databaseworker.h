@@ -35,7 +35,6 @@ public slots:
     void filesScaned(const QStringList& files);
     void filesAnalyzed(const ImageStatisticsList& files, bool lastChunk, const QTime& time);
 
-
 };
 
 #endif // DATABASEWORKER_H

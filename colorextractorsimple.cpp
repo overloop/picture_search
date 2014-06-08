@@ -29,7 +29,7 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
     int h_n,s_n,l_n;
     double h_nd,s_nd,l_nd;
     double h_d,s_d,l_d;
-    h_n = options.h; //hue is most important I think
+    h_n = options.h;
     s_n = options.s;
     l_n = options.l;
 
@@ -37,10 +37,9 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
     s_nd = s_n;
     l_nd = l_n;
 
-    // shame
-    h_d = 1.000001 / h_nd;
-    s_d = 1.000001 / s_nd;
-    l_d = 1.000001 / l_nd;
+    h_d = 1.0 / h_nd;
+    s_d = 1.0 / s_nd;
+    l_d = 1.0 / l_nd;
 
     int cat_size = h_n*s_n*l_n;
     int categories[cat_size];
@@ -64,9 +63,9 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
 
             int h_c,s_c,l_c;
             c.getHslF(&h,&s,&l);
-            h_c = int(h / h_d); //category index
-            s_c = int(s / s_d);
-            l_c = int(l / l_d);
+            h_c = qMin(int(h / h_d),h_n-1); //category index
+            s_c = qMin(int(s / s_d),s_n-1);
+            l_c = qMin(int(l / l_d),l_n-1);
 
             //qDebug() << h_c << s_c << l_c << h_n << s_n << l_n << h << s << l << h_d << s_d << l_d;
             int idx = ARRAY_INDEX(h_c,s_c,l_c,h_n,s_n,l_n);
@@ -77,7 +76,7 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
     for (int m=0;m<n;m++)
     {
         int c_max = 0;
-        double h_max, s_max, l_max;
+        int h_max, s_max, l_max;
         h_max = s_max = l_max = 0;
         for (int i=0;i<h_n;i++)
             for (int j=0;j<s_n;j++)
@@ -92,9 +91,9 @@ QList<QColor> ColorExtractorSimple::extract(const ColorExtractrorOptions& option
                         l_max = k;
                     }
                 }
-        int idx = ARRAY_INDEX(int(h_max),int(s_max),int(l_max),h_n,s_n,l_n);
+        int idx = ARRAY_INDEX(h_max,s_max,l_max,h_n,s_n,l_n);
         categories[idx] = 0;
-        colors.append(QColor::fromHslF((h_max+0.5)*h_d,(s_max+0.5)*s_d,(l_max+0.5)*l_d));
+        colors.append(QColor::fromHslF(((double)h_max+0.5)*h_d,((double)s_max+0.5)*s_d,((double)l_max+0.5)*l_d));
     }
 
     return colors;

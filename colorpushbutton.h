@@ -11,7 +11,8 @@ public:
     explicit ColorPushButton(QWidget *parent = 0);
 
     void paintEvent(QPaintEvent *event);
-    QColor color() const {return m_color;}
+    QColor color() const;
+    void setColor(const QColor& color);
 
 protected:
     QColor m_color;

@@ -20,3 +20,12 @@ void ColorPushButton::paintEvent(QPaintEvent* event)
     p.setPen(pen);
     p.drawRect(QRect(QPoint(0,0),this->size()-QSize(1,1)));
 }
+
+QColor ColorPushButton::color() const {
+    return m_color;
+}
+
+void ColorPushButton::setColor(const QColor& color) {
+    m_color = color;
+    repaint();
+}

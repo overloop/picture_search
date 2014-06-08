@@ -28,22 +28,31 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="ImageLabel" name="image">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="ColorsWidget" name="colors" native="true"/>
+        </item>
+        <item>
+         <widget class="ImageLabel" name="image">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -128,6 +137,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="analyzeImage"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -166,6 +176,11 @@
     <string>&amp;Exit</string>
    </property>
   </action>
+  <action name="analyzeImage">
+   <property name="text">
+    <string>&amp;Analyze image</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -188,6 +203,12 @@
    <class>ImageLabel</class>
    <extends>QLabel</extends>
    <header>imagelabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ColorsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">colorswidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

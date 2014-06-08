@@ -50,6 +50,8 @@ private slots:
     void on_deviation_sliderReleased();
     void on_openDatabase_triggered();
     void on_about_triggered();
+    void on_analyzeImage_triggered();
+    void on_colors_clicked(QColor);
 
     void currentImageChanged(QModelIndex current, QModelIndex);
     void databaseOpened(bool ok,const QString& error);

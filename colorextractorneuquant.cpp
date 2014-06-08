@@ -4,7 +4,7 @@
 #include <QColor>
 
 ColorExtractorNeuquant::ColorExtractorNeuquant(const QImage &image, QSize scaledSize /*= QSize(200,200)*/) :
-    ColorExtractor(image,scaledSize)
+    ColorExtractor(image,image.size())
 {
 
 }
@@ -14,7 +14,7 @@ QList<QColor> ColorExtractorNeuquant::extract(const ColorExtractrorOptions &opti
 {
     Q_UNUSED(options)
 
-    int sf = 5;
+    int sf = 4;
 
     int w = m_scaled.width();
     int h = m_scaled.height();

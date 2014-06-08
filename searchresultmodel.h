@@ -9,6 +9,14 @@
 class SearchResultModel : public QAbstractTableModel
 {
 public:
+    enum Columns {
+        Preview = 0,
+        Path,
+        Id,
+        Colors,
+        Size
+    };
+
    SearchResultModel(const ImageStatisticsList& files, QObject* parent = 0);
    ~SearchResultModel();
 
@@ -18,11 +26,15 @@ public:
 
    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
+   static QList<QVariant> colorListToVariantList(const QList<QColor>& colors);
+   static QList<QColor> variantListToColorList(const QList<QVariant>& colors);
+
 protected:
 
    QList<QPixmap> m_preview;
    QList<QString> m_paths;
    QList<int> m_ids;
+   QList<QList<QVariant> > m_colors;
 
 };
 
